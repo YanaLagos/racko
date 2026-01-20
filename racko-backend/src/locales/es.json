@@ -1,0 +1,261 @@
+{
+  "common": {
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "loading": "Cargando",
+    "searching": "Buscando",
+    "search": "Buscar",
+    "viewMore": "Ver más",
+    "yes": "Sí",
+    "no": "No",
+    "query": "Consultar",
+    "asc": "Ascendente",
+    "desc": "Descendente",
+    "edit": "Editar",
+    "lang": {
+      "es": "Español",
+      "en": "Inglés"
+    }
+  },
+
+  "audits": {
+    "internalUsers": {
+      "created": "Se creó el usuario interno con email {{email}} y rol {{rol}}",
+      "activated": "Se activó la cuenta del usuario ID {{id_usuario_afectado}}",
+      "deactivated": "Se desactivó la cuenta del usuario ID {{id_usuario_afectado}}",
+      "updated": "Actualizó usuario interno (ID {{id_usuario_afectado}}). Cambios: {{cambios}}. Email: {{email}}",
+      "inviteSent": "Reenvió invitación para definir contraseña a {{email}} (ID {{id_usuario_afectado}})."
+    },
+
+    "externalUsers": {
+      "created": "Se registró un usuario externo",
+      "updated": "Se actualizó un usuario externo",
+      "deactivated": "se desactivó un usuario externo",
+      "activated": "Se activó un usuario externo",
+      "reputationUpdated": "Se ha actualizado la reputación del usuario",
+      "rutChanged": "Se modificó el RUT del usuario"
+    },
+
+    "assets": {
+      "loanCreated": "Préstamo registrado",
+      "loanUpdated": "Préstamo actualizado",
+      "loanReturned": "Préstamo devuelto",
+      "observationUpdated": "Observaciones actualizadas",
+      "categoryCreated": "Categoría creada",
+      "categoryUpdated": "Categoría actualizada",
+      "categoryDeactivated": "Categoría desactivada",
+      "categoriaActivated": "Categoría activada",
+      "locationCreated": "Ubicación creada",
+      "locationUpdated": "Ubicación actualizada",
+      "locationDeactivated": "Ubicación desactivada",
+      "locationActivated": "Ubicación activada",
+      "resourceCreated": "Recurso creado",
+      "resourceUpdated": "Recurso actualizado",
+      "resourseDeactivated": "Recurso desactivado",
+      "resourceActivated": "Recurso activado"
+    },
+
+    "events": {
+      "noUser": "(sin usuario)",
+
+      "pdf": {
+        "title": "Reporte de eventos - Racko",
+        "generated": "Generado",
+
+        "cols": {
+          "date": "Fecha",
+          "type": "Tipo",
+          "user": "Usuario",
+          "refs": "Refs",
+          "detail": "Detalle"
+        },
+
+        "type": {
+          "CREACION": "Creation",
+          "ACTUALIZACION": "Update",
+          "DESACTIVACION": "Deactivation"
+        },
+
+        "refs": {
+          "externo": "Externo",
+          "recurso": "Recurso",
+          "prestamo": "Préstamo",
+          "categoria": "Categoría",
+          "ubicacion": "Ubicación"
+        }
+      }
+    }
+  },
+
+  "loans": {
+    "pdf": {
+      "title": "Reporte de préstamos - Racko",
+      "generated": "Generado",
+      "filtersSummary": "Filtros",
+      "cols": {
+        "id": "ID",
+        "resource": "Recurso",
+        "loanedTo": "Prestado a",
+        "rut": "RUT",
+        "loanDate": "Préstamo",
+        "returnDate": "Devolución",
+        "dueDate": "Venc.",
+        "frequency": "Frecuencia"
+      },
+      "empty": "Sin registros"
+    }
+  },
+
+  "success": {
+    "ok": {
+      "internalUserCreated": "Usuario Administrador creado"
+    },
+    "internalUsers": {
+      "fetched": "Usuarios internos cargados correctamente",
+      "created": "Usuario interno creado",
+      "activated": "Usuario activado",
+      "deactivated": "Usuario desactivado",
+      "updated": "Usuario actualizado.",
+      "inviteSent": "Invitación enviada.",
+      "languageUpdated": "Idioma actualizado"
+    },
+
+    "externalUsers": {
+      "created": "Usuario externo creado",
+      "updated": "Usuario externo actualizado",
+      "deactivated": "Usuario externo desactivado",
+      "activated": "Usuario externo activado",
+      "fetched": "Usuarios cargados"
+    },
+
+    "categories": {
+      "created": "Categoría creada",
+      "updated": "Categoría actualizada"
+    },
+
+    "loans": {
+      "registered": "Préstamo registrado",
+      "returned": "Préstamo devuelto",
+      "observationUpdated": "Observaciones actualizadas",
+      "historyFetched": "Historial exitoso",
+      "upcomingDueFetched": "Fecha de vencimiento cargada"
+    },
+
+    "resources": {
+      "fetched": "Recursos cargados",
+      "created": "Recurso creado",
+      "updated": "Recurso actualizado",
+      "activated": "Recurso activado",
+      "deactivated": "Recurso desactivado"
+    },
+
+    "locations": {
+      "fetched": "Ubicación cargada",
+      "created": "Ubicación creada",
+      "updated": "Ubicación actualizada"
+    },
+
+    "auth": {
+      "loginOk": "Inicio de sesión exitoso",
+      "resetRequested": "Se ha enviado un correo para reestablecer la contraseña",
+      "passwordUpdated": "Contraseña actualizada correctamente"
+    }
+  },
+
+  "errors": {
+    "server": {
+      "internal": "Error interno del servidor"
+    },
+    "validation": {
+      "requiredFields": "Faltan campos obligatorios",
+      "invalidId": "ID inválido",
+      "invalidState": "Estado inválido",
+      "invalidLanguage": "Idioma no válido",
+      "invalidEmail": "Correo electrónico inválido",
+      "invalidRut": "Rut inválido",
+      "invalidResourceId": "Id de recurso inválida",
+      "invalidDueDate": "Fecha de vencimiento inválida",
+      "invalidObservations": "Observaciones inválidas",
+      "invalidLoanId": "Id de préstamo inválido",
+      "invalidForeignKey": "Key inválida",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+      "duplicateEntry": "Entrada duplicada"
+    },
+    "auth": {
+      "invalidCredentials": "Credenciales incorrectas",
+      "invalidToken": "Token inválido",
+      "missingToken": "Token no proporcionado"
+    },
+    "internalUsers": {
+      "fetchFailed": "No se pudieron cargar los usuarios internos",
+      "profileFetchFailed": "No se pudo cargar el perfil",
+      "languageUpdateFailed": "No se pudo actualizar el idioma",
+      "stateUpdateFailed": "No se pudo actualizar el estado",
+      "cannotDeactivateSelf": "No puedes desactivar tu propio usuario",
+      "notFound": "Usuario interno no encontrado",
+      "usernameAlreadyExists": "El nombre de usuario ya existe",
+      "updateFailed": "No se pudo actualizar el usuario.",
+      "emailAlreadyExists": "El correo ya existe",
+      "inviteFailed": "No se pudo enviar la invitación.",
+      "inactiveUser": "No se puede invitar a un usuario inactivo."
+    },
+
+    "externalUsers": {
+      "fetchFailed": "No se pudo cargar el usuario",
+      "notFound": "No se encontró el usuario externo",
+      "rutalreadyExists": "Ya existe el rut ingreado",
+      "createFailed": "No se pudo crear el Usuario externo",
+      "updateFailed": "No se pudo actualizar el usuario externo",
+      "stateUpdateFailed": "No se pudo activar/desactivar el usuario externo",
+      "notFounfMsg": "El usuario no existe. ¿Desea registralo?"
+    },
+    "email": {
+      "sendFailed": "No se pudo enviar el correo."
+    },
+
+    "categories": {
+      "alreadyExists": "La categoría ya existe",
+      "createdFailed": "Hubo un error en la creación de la categoría",
+      "notFound": "Categoría no encontrada",
+      "updateFailed": "Hubo un error en la actualización",
+      "activated": "Categoría activada",
+      "deactivated": "Categoría desactivada",
+      "stateUpdateFailed": "No se pudo desactivar/activar la categoría"
+    },
+
+    "resources": {
+      "notFound": "No se encontró el recurso",
+      "alreadyLoaned": "Recurso ya prestado",
+      "fetchFailed": "Error al cargar los recursos",
+      "alreadyExists": "El recurso ya existe",
+      "createfailed": "No se pudo crear el recurso",
+      "updateFailed": "No se pudo actualizar el recurso",
+      "stateUpdateFailed": "No se pudo activar/desactivar el recurso"
+    },
+
+    "loans": {
+      "notFound": "Préstamo no encontrado",
+      "alreadyReturned": "El préstamo ya fue devuelto"
+    },
+
+    "locations": {
+      "fetcheFailed": "No se pudo cargar la Ubicación",
+      "alreadyExists": "Ya existe la Ubicación",
+      "createFailed": "No se pudo crear la Ubicación",
+      "notFound": "No se encontró la Ubicación",
+      "updateFailed": "Hubo un error en la actualización",
+      "activated": "Ubicación activada",
+      "deactivated": "Ubicación desactivada",
+      "stateUpdateFailed": "No se pusoactualizar el estado"
+    },
+
+    "reports": {
+      "fetchedFailed": "No se cargaron los datos"
+    },
+
+    "audit": {
+      "pdfFailed": "No se pudo exportar el PDF"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+:root {
+  /* Colores */
+  --bg-main: linear-gradient(180deg, #B565FB, #7094FF);
+  --bg-card: #ffffff;
+  --color-primary: #B565FB;
+  --color-primary-soft: #7e2bcb;
+  --color-primary-light: #E9E1FF;
+  --color-secondary: #7094FF;
+  --color-secondary-soft: #4a69c8;
+  --color-secondary-light: #cfddfc;
+  --color-third: #2CE4C2; 
+  --color-third-soft: #24a58e;
+  --color-fourth: #ED80F0;
+  --color-fourth-soft: #be59c2;
+  --color-fourth-light: #faccfc ;
+  --gradient-secondary: linear-gradient(180deg, #ED80F0, #B565FB);
+
+  --color-unavailable: #E40404;
+  --color-available: #62BC5C;
+
+  --color-label: #1f1f24;
+
+  /* Botones */
+  --color-btn: #5169FF;
+  --color-btn-hover: #3e4fc0;
+  --color-btn-cancel: #e5e7eb;
+  --color-btn-gradient: linear-gradient(180deg, #B565FB, #7094FF);
+  --color-btn-primary: #B565FB;
+  --color-btn-primary-hover: #7e2bcb;
+  --color-btn-danger: #b0284e; 
+
+  --text-main: #33323B;
+  --text-secondary: #ffffff;
+  --text-muted: rgba(127, 127, 127, 0.7);
+  --danger: #b0284e;
+
+  /* Tipografía */
+  --font-main: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* Medidas */
+  --radius: 14px;
+  --radius-sm: 20px;
+  --radius-l: 30px;
+  --max-width: 1200px;
+}

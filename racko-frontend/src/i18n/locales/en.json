@@ -1,0 +1,144 @@
+{
+  "login": {
+    "title": "Hello!",
+    "subtitle": "Sign in",
+    "user": "User name",
+    "password": "Password",
+    "signIn": "Sign in",
+    "loading": "Signing in",
+    "forgot": "Forgot my password"
+  },
+
+  "forgot": {
+    "title": "Reset password",
+    "subtitle": "Enter your info below and we'll help you set up a new password.",
+    "email": "Email",
+    "send": "Send new password",
+    "loading": "Sending..."
+  },
+
+  "reset": {
+    "title": "Choose a new password",
+    "subtitle": "Create your new password:",
+    "loading": "Saving...",
+    "save": "Save",
+    "confirmPassword": "Confirm password"
+  },
+
+  "roles": {
+    "admin": "Administrator",
+    "collab": "Collaborator"
+  },
+
+  "menu": {
+    "home": "Dashboard",
+    "loans": "Checkouts",
+    "audit": "Audits",
+    "users": "Users",
+    "admin": "Administration",
+    "logout": "Sign out"
+  },
+
+  "success": {
+    "categories": {
+      "fetched": "Categories loaded successfully",
+      "managementFetched": "Category management loaded",
+      "created": "Category created successfully",
+      "activated": "Category activated",
+      "deactivated": "Category deactivated"
+    },
+    "resources": {
+      "fetched": "Resources loaded successfully",
+      "created": "Resource created successfully",
+      "updated": "Resource updated successfully",
+      "markedAvailable": "Resource marked as available",
+      "markedUnavailable": "Resource marked as unavailable"
+    },
+    "externalUsers": {
+      "created": "External user registered successfully",
+      "updated": "External user updated successfully",
+      "fetched": "External users loaded successfully"
+    },
+    "internalUsers": {
+      "fetched": "Internal users loaded successfully",
+      "profileFetched": "Profile loaded successfully",
+      "languageUpdated": "Language updated successfully",
+      "activated": "User activated",
+      "deactivated": "User deactivated"
+    },
+    "loans": {
+      "registered": "Loan registered successfully",
+      "returned": "Loan returned successfully",
+      "observationUpdated": "Observations updated"
+    },
+    "auth": {
+      "loginOk": "Login successful",
+      "resetRequested": "Password reset email sent",
+      "passwordUpdated": "Password updated successfully"
+    },
+    "audit": {
+      "fetched": "Audit records loaded successfully"
+    },
+    "reports": {
+      "fetched": "Report loaded successfully"
+    }
+  },
+
+  "errors": {
+    "server": {
+      "internal": "Internal server error"
+    },
+    "validation": {
+      "requiredFields": "Required fields are missing",
+      "invalidId": "Invalid ID",
+      "invalidState": "Invalid state",
+      "invalidLanguage": "Invalid language",
+      "invalidRut": "Invalid RUT"
+    },
+    "auth": {
+      "forbidden": "You do not have permission to perform this action",
+      "invalidCredentials": "Invalid credentials",
+      "invalidToken": "Invalid token",
+      "missingToken": "Token not provided"
+    },
+    "categories": {
+      "fetchFailed": "Failed to load categories",
+      "managementFetchFailed": "Failed to load category management",
+      "alreadyExists": "Category already exists",
+      "notFound": "Category not found",
+      "createFailed": "Failed to create category",
+      "stateUpdateFailed": "Failed to update category state"
+    },
+    "resources": {
+      "fetchFailed": "Failed to load resources",
+      "createFailed": "Failed to create resource",
+      "updateFailed": "Failed to update resource",
+      "availabilityUpdateFailed": "Failed to update availability",
+      "notFound": "Resource not found",
+      "alreadyLoaned": "Resource is already loaned"
+    },
+    "externalUsers": {
+      "createFailed": "Failed to create external user",
+      "updateFailed": "Failed to update external user",
+      "fetchFailed": "Failed to load external users",
+      "rutAlreadyExists": "RUT already exists",
+      "notFound": "External user not found"
+    },
+    "internalUsers": {
+      "fetchFailed": "Failed to load internal users",
+      "profileFetchFailed": "Failed to load profile",
+      "languageUpdateFailed": "Failed to update language",
+      "stateUpdateFailed": "Failed to update state",
+      "cannotDeactivateSelf": "You cannot deactivate your own user",
+      "notFound": "Internal user not found"
+    },
+    "loans": {
+      "notFound": "Loan not found",
+      "alreadyReturned": "Loan already returned"
+    },
+    "audit": {
+      "fetchFailed": "Failed to load audit",
+      "pdfFailed": "Failed to generate PDF"
+    }
+  }
+}

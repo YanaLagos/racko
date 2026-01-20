@@ -1,0 +1,25 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
+  },
+
+  "audits": {
+    "unknown": "Desconocido"
+  },
+
+  "events": {
+    "pdf": {
+      "title": "Reporte de eventos - Racko",
+      "generated": "Generado",
+      "cols": {
+        "date": "Fecha",
+        "type": "Tipo",
+        "user": "Usuario",
+        "refs": "Refs",
+        "detail": "Detalle"
+      },
+      "noUser": "(sin usuario)"
+    }
+  }
+}

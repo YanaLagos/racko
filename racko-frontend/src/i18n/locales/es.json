@@ -1,0 +1,570 @@
+{
+  "login": {
+    "title": "¡Hola!",
+    "subtitle": "Inicia tu sesión",
+    "user": "Usuario",
+    "password": "Contraseña",
+    "signIn": "Ingresar",
+    "loading": "Ingresando",
+    "forgot": "Olvidé mi contraseña"
+  },
+
+  "forgot": {
+    "title": "Restablecer contraseña",
+    "subtitle": "Ingresa tus datos y te enviaremos las instrucciones para una nueva contraseña.",
+    "email": "Correo",
+    "send": "Enviar nueva contraseña",
+    "loading": "Enviando..."
+  },
+
+  "reset": {
+    "title": "Restablece tu contraseña",
+    "subtitle": "Ingresa tu nueva contraseña:",
+    "loading": "Enviando...",
+    "save": "Guardar",
+    "confirmPassword": "Confirmar contraseña"
+  },
+
+  "roles": {
+    "admin": "Administrador",
+    "collab": "Colaborador"
+  },
+
+  "menu": {
+    "home": "Inicio",
+    "assets": "Activos",
+    "audit": "Auditorías",
+    "users": "Usuarios",
+    "admin": "Administración",
+    "logout": "Cerrar sesión"
+  },
+
+  "logout": {
+    "title": "¿Desea cerrar sesión?",
+    "subtitle": "Presione Cerrar sesión para continuar"
+  },
+
+  "common": {
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "back": "Volver",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "loading": "Cargando",
+    "searching": "Buscando",
+    "search": "Buscar",
+    "viewMore": "Ver más",
+    "yes": "Sí",
+    "no": "No",
+    "query": "Consultar",
+    "asc": "Ascendente",
+    "desc": "Descendente",
+    "edit": "Editar",
+    "lang": {
+      "es": "Español",
+      "en": "Inglés"
+    }
+  },
+
+  "dashboard": {
+    "widget": {
+      "upcomingDueAria": "Próximos vencimientos",
+      "tomorrow": "Mañana",
+      "none": "Sin vencimientos",
+      "noItems": "No hay vencimientos para hoy ni mañana.",
+      "mustBeReturnedBy": "debe ser devuelto por",
+      "goToDeadline": "Ver vencimientos"
+    }
+  },
+
+  "assets": {
+    "title": "Activos",
+    "categories": "Categorías",
+    "resources": "Recursos",
+    "createdBy": "Creado por",
+    "deactiveHint": "Al desactivar la categoría, dejará de estar disponible para nuevos recursos. Esta acción se puede revertir."
+  },
+
+  "resources": {
+    "titleFallback": "Recursos",
+    "empty": "No hay recursos",
+
+    "view": {
+      "label": "Vista",
+      "cards": "Tarjetas",
+      "list": "Lista"
+    },
+
+    "details": {
+      "title": "Detalles del recurso",
+      "details": "Detalles",
+      "loanStart": "Fecha de inicio",
+      "description": "Descripción",
+      "locationID": "ID de ubicación",
+      "location": "Ubicación",
+      "resourceId": "ID del recurso",
+      "usage":"Frecuencia de uso",
+      "state": "Estado",
+      "toDo": "Guardar",
+      "loanActive": "¿Está prestado?",
+      "loanId": "ID préstamo",
+      "loanDue": "Fecha de vencimiento",
+      "loanRut": "RUT usuario",
+      "loanTo": "Nombre usuario",
+      "category": "Categoría"
+    },
+
+    "actions": {
+      "create0:": "Crear recurso",
+      "viewResources":"Ver recursos",
+      "viewMore":"Ver más",
+      "return": "Devolver",
+      "assign": "Asignar",
+      "loan": "Prestar/Devolver",
+      "continue": "Continuar",
+      "confirmCreation": "¿Confirmas crear la categoría?",
+      "register": "Registrar"
+    },
+
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+
+    "assignFlow" : {
+      "title": "Asignar recurso",
+      "subtitle": "Ingrese RUT del usuario externo",
+      "rutLabel": "RUT",
+      "rutPh": "12345678-k",
+      "userFound": "Usuario verificado"
+    },
+
+    "confirmLoan": {
+      "title": "Confirmar datos",
+      "subtitle": "Revise los datos antes de confirmar",
+      "option": "Opciones",
+      "assign":"Prestar",
+      "observationsLabel": "Observaciones",
+      "observationsPh": "Puedes editar o agregar nuevas observaciones"
+    }
+    
+  },
+
+  "audits": {
+    "title": "Auditorías de préstamos",
+    "loading": "Cargando auditorías…",
+    "unknown": "Acción de sistema no especificada",
+
+    "internalUsers": {
+      "created": "Se creó el usuario interno con email {{email}} y rol {{rol}}",
+      "activated": "Se activó la cuenta del usuario ID {{id_usuario_afectado}}",
+      "deactivated": "Se desactivó la cuenta del usuario ID {{id_usuario_afectado}}",
+      "updated": "Actualizó usuario interno (ID {{id_usuario_afectado}}). Cambios: {{cambios}}. Email: {{email}}",
+      "inviteSent": "Reenvió invitación para definir contraseña a {{email}} (ID {{id_usuario_afectado}})."
+    },
+
+    "externalUsers": {
+      "created": "Se registró un usuario externo",
+      "updated": "Se actualizó un usuario externo",
+      "deactivated": "se desactivó un usuario externo",
+      "activated": "Se activó un usuario externo",
+      "reputationUpdated": "Se ha actualizado la reputación del usuario",
+      "rutChanged": "Se modificó el RUT del usuario"
+    },
+
+    "assets": {
+      "loanCreated": "Préstamo registrado",
+      "loanUpdated": "Préstamo actualizado",
+      "loanReturned": "Préstamo devuelto",
+      "observationUpdated": "Observaciones actualizadas",
+      "categoryCreated": "Categoría creada",
+      "categoryUpdated": "Categoría actualizada",
+      "categoryDeactivated": "Categoría desactivada",
+      "categoriaActivated": "Categoría activada",
+      "locationCreated": "Ubicación creada",
+      "locationUpdated": "Ubicación actualizada",
+      "locationDeactivated": "Ubicación desactivada",
+      "locationActivated": "Ubicación activada",
+      "resourceCreated": "Recurso creado",
+      "resourceUpdated": "Recurso actualizado",
+      "resourseDeactivated": "Recurso desactivado",
+      "resourceActivated": "Recurso activado"
+    },
+
+    "filters": {
+      "externalUser": "Nombre del usuario",
+      "externalUserPh": "Ej: Ana Pérez",
+      "rut": "RUT del usuario",
+      "rutPh": "Ej: 12345678-9",
+      "resource": "Recurso",
+      "resourcePh": "Ej: Notebook",
+      "day": "Fecha de préstamo",
+      "rangeFrom": "Préstamos desde",
+      "rangeTo": "Préstamos hasta",
+      "modeLabel": "Filtrar",
+
+      "mode": {
+        "inProgress": "Préstamos en curso",
+        "all": "Todos los préstamos",
+        "upcomingDue": "Próximos vencimientos",
+        "frequency": "Frecuencia de préstamo"
+      }
+    },
+
+    "actions": {
+      "query": "Consultar",
+      "report": "Generar reporte"
+    },
+
+    "cols": {
+      "loanId": "ID préstamo",
+      "frequency": "Frecuencia",
+      "resource": "Recurso",
+      "loanedTo": "Prestado a",
+      "rut": "RUT",
+      "loanDate": "Fecha préstamo",
+      "returnDate": "Fecha devolución",
+      "dueDate": "Vencimiento",
+      "registeredBy": "Registrado por",
+      "observations": "Observaciones"
+    },
+
+    "table": {
+      "empty": "No hay préstamos que coincidan con los filtros seleccionados.",
+      "total": "Total de registros",
+      "noObs": "Sin observaciones",
+      "editObs": "Editar observación",
+      "editPrompt": "Editar observación del préstamo:",
+
+      "pagination": {
+        "pageOf": "Página {{page}} de {{totalPages}}",
+        "prev": "Anterior",
+        "next": "Siguiente"
+      }
+    }
+  },
+
+  "users": {
+    "title": "Usuarios",
+
+    "filters": {
+      "name": "Nombre",
+      "namePh": "Ej: Ana Pérez",
+      "rut": "RUT",
+      "rutPh": "Ej: 12345678-9",
+      "onlyActive": "Solo activos",
+      "sortBy": "Ordenar por",
+      "sortDir": "Dirección"
+    },
+
+    "sort": {
+      "reputation": "Reputación",
+      "name": "Nombre",
+      "lastName": "Apellido"
+    },
+
+    "cols": {
+      "rut": "RUT",
+      "reputation": "Reputación",
+      "name": "Nombre",
+      "lastName": "Apellido",
+      "phone": "Teléfono",
+      "email": "Email",
+      "address": "Dirección",
+      "registeredBy": "Registrado por",
+      "status": "Estado",
+      "edit": "Editar",
+      "username": "Username",
+      "role": "Rol",
+      "id": "ID"
+    },
+
+    "table": {
+      "empty": "No hay usuarios que coincidan con los filtros seleccionados."
+    },
+
+    "modal": {
+      "title": "Editar usuario",
+      "save": "Guardar",
+      "edit": "Editar",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "deactivate": {
+        "text": "¿Este usuario ya no requiere acceso?",
+        "action": "Desactivar cuenta"
+      }
+    },
+
+    "actions": {
+      "add": "Registrar usuario",
+      "edit": "Modificar",
+      "invite": "Reenviar invitación",
+      "inviteConfirm": "¿Reenviar correo para definir contraseña?",
+      "inviteOk": "Invitación enviada.",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "deactivateConfirm": "¿Seguro que deseas desactivar este usuario?"
+    },
+
+    "empty": {
+      "internalUsers": "No se encontraron usuarios internos."
+    },
+
+    "edit": {
+      "title": "Editar usuario interno",
+      "save": "Guardar cambios",
+      "newPasswordOptional": "Nueva contraseña (opcional)",
+      "newPasswordOptionalPh": "Se enviará un correo para cambiarla."
+    },
+
+    "create": {
+      "title": "Añadir usuario",
+      "confirmTitle": "Confirmar datos",
+      "subtitle": "Ingresa los datos del nuevo usuario.",
+      "confirmSubtitle": "Revisa la información antes de guardar.",
+      "inviteHint": "Se enviará un correo para que el usuario defina su contraseña.",
+      "hint": "RUT, Nombre, Apellido, Email y Teléfono son obligatorios*",
+
+      "fields": {
+        "rut": "RUT del usuario",
+        "rutPh": "Ej: 12569899-0",
+        "nombre": "Nombre",
+        "nombrePh": "Ej: Ana",
+        "apellido": "Apellido",
+        "apellidoPh": "Ej: Pérez",
+        "email": "Email",
+        "emailPh": "Ej: correo@racko.com",
+        "username": "Nombre de usuario",
+        "usernamePh": "Ej: anaperez",
+        "direccion": "Dirección",
+        "direccionPh": "Ej: Calle principal, 333, Comuna (Opcional)",
+        "telefono": "Teléfono",
+        "telefonoPh": "Ej: +569 9899898",
+        "rol": "Rol de usuario",
+        "rolPh": "Seleccione un rol:",
+        "rolAdmin": "Administrador",
+        "rolColab": "Colaborador"
+      },
+
+      "actions": {
+        "next": "Siguiente",
+        "save": "Guardar",
+        "back": "Volver"
+      }
+    }
+  },
+
+  "administrator": {
+    "title": "Administración del sistema",
+
+    "activity": {
+      "title": "Actividad reciente",
+      "viewAll": "Ver historial completo →",
+      "empty": "No hay actividad reciente.",
+      "unknownUser": "(sin usuario)"
+    },
+
+    "internalUsers": {
+      "sectionTitle": "Usuarios internos",
+      "searchPlaceholder": "Buscar por nombre o email",
+      "createBtn": "+ Crear usuario interno",
+      "roleRestriction": "El ID y el Rol no pueden ser modificados por seguridad."
+    }
+  },
+
+  "events": {
+    "filters": {
+      "search": "Buscar",
+      "searchPh": "Buscar en detalle técnico. Ej: id=12, created",
+      "eventType": "Tipo de evento",
+      "sort": "Ordenar por",
+      "rangeFrom": "Desde",
+      "rangeTo": "Hasta",
+      "internalUser": "Usuario interno",
+      "internalUserPh": "Nombre o apellido",
+      "refType": "Ref. tipo",
+      "refValue": "Ref. valor",
+      "refValuePh": "Id, nombre o RUT"
+    },
+
+    "actions": {
+      "query": "Consultar",
+      "clear": "Limpiar",
+      "exportPdf": "Exportar PDF"
+    },
+
+    "cols": {
+      "eventId": "ID",
+      "datetime": "Fecha/Hora",
+      "type": "Tipo",
+      "internalUser": "Usuario interno",
+      "reftype": "Ref. tipo",
+      "refValue": "Ref. valor",
+      "detail": "Detalle"
+    },
+
+    "table": {
+      "unknounUser": "(sin usuario)",
+      "empty": "No hay registros para mostrar.",
+      "total": "Total",
+      "pagination": {
+        "pageOf": "Página ${page} de ${totalPages}",
+        "prev": "Anterior",
+        "next": "Siguiente"
+      }
+    }
+  },
+
+  "success": {
+    "ok": {
+      "internalUserCreated": "Usuario Administrador creado"
+    },
+    "internalUsers": {
+      "fetched": "Usuarios internos cargados correctamente",
+      "created": "Usuario interno creado",
+      "activated": "Usuario activado",
+      "deactivated": "Usuario desactivado",
+      "updated": "Usuario actualizado.",
+      "inviteSent": "Invitación enviada.",
+      "languageUpdated": "Idioma actualizado"
+    },
+
+    "externalUsers": {
+      "created": "Usuario externo creado",
+      "updated": "Usuario externo actualizado",
+      "deactivated": "Usuario externo desactivado",
+      "activated": "Usuario externo activado",
+      "fetched": "Usuarios cargados"
+    },
+
+    "categories": {
+      "created": "Categoría creada",
+      "updated": "Categoría actualizada"
+    },
+
+    "loans": {
+      "registered": "Préstamo registrado",
+      "returned": "Préstamo devuelto",
+      "observationUpdated": "Observaciones actualizadas",
+      "historyFetched": "Historial exitoso",
+      "upcomingDueFetched": "Fecha de vencimiento cargada"
+    },
+
+    "resources": {
+      "fetched": "Recursos cargados",
+      "created": "Recurso creado",
+      "updated": "Recurso actualizado",
+      "activated": "Recurso activado",
+      "deactivated": "Recurso desactivado"
+    },
+
+    "locations": {
+      "fetched": "Ubicación cargada",
+      "created": "Ubicación creada",
+      "updated": "Ubicación actualizada"
+    },
+
+    "auth": {
+      "loginOk": "Inicio de sesión exitoso",
+      "resetRequested": "Se ha enviado un correo para reestablecer la contraseña",
+      "passwordUpdated": "Contraseña actualizada correctamente"
+    }
+  },
+
+  "errors": {
+    "server": {
+      "internal": "Error interno del servidor"
+    },
+    "validation": {
+      "requiredFields": "Faltan campos obligatorios",
+      "invalidId": "ID inválido",
+      "invalidState": "Estado inválido",
+      "invalidLanguage": "Idioma no válido",
+      "invalidEmail": "Correo electrónico inválido",
+      "invalidRut": "Rut inválido",
+      "invalidResourceId": "Id de recurso inválida",
+      "invalidDueDate": "Fecha de vencimiento inválida",
+      "invalidObservations": "Observaciones inválidas",
+      "invalidLoanId": "Id de préstamo inválido",
+      "invalidForeignKey": "Key inválida",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+      "duplicateEntry": "Entrada duplicada"
+    },
+    "auth": {
+      "invalidCredentials": "Credenciales incorrectas",
+      "invalidToken": "Token inválido",
+      "missingToken": "Token no proporcionado"
+    },
+    "internalUsers": {
+      "fetchFailed": "No se pudieron cargar los usuarios internos",
+      "profileFetchFailed": "No se pudo cargar el perfil",
+      "languageUpdateFailed": "No se pudo actualizar el idioma",
+      "stateUpdateFailed": "No se pudo actualizar el estado",
+      "cannotDeactivateSelf": "No puedes desactivar tu propio usuario",
+      "notFound": "Usuario interno no encontrado",
+      "usernameAlreadyExists": "El nombre de usuario ya existe",
+      "updateFailed": "No se pudo actualizar el usuario.",
+      "emailAlreadyExists": "El correo ya existe",
+      "inviteFailed": "No se pudo enviar la invitación.",
+      "inactiveUser": "No se puede invitar a un usuario inactivo."
+    },
+
+    "externalUsers":{
+      "fetchFailed": "No se pudo cargar el usuario",
+      "notFound": "No se encontró el usuario externo",
+      "rutalreadyExists": "Ya existe el rut ingreado",
+      "createFailed": "No se pudo crear el Usuario externo",
+      "updateFailed": "No se pudo actualizar el usuario externo",
+      "stateUpdateFailed": "No se pudo activar/desactivar el usuario externo",
+      "notFounfMsg": "El usuario no existe. ¿Desea registralo?"
+    },
+    "email": {
+      "sendFailed": "No se pudo enviar el correo."
+    },
+
+    "categories": {
+      "alreadyExists": "La categoría ya existe",
+      "createdFailed": "Hubo un error en la creación de la categoría",
+      "notFound": "Categoría no encontrada",
+      "updateFailed": "Hubo un error en la actualización",
+      "activated": "Categoría activada",
+      "deactivated": "Categoría desactivada",
+      "stateUpdateFailed": "No se pudo desactivar/activar la categoría"
+    },
+
+    "resources": {
+      "notFound": "No se encontró el recurso",
+      "alreadyLoaned": "Recurso ya prestado",
+      "fetchFailed": "Error al cargar los recursos",
+      "alreadyExists": "El recurso ya existe",
+      "createFailed": "No se pudo crear el recurso",
+      "updateFailed": "No se pudo actualizar el recurso",
+      "stateUpdateFailed": "No se pudo activar/desactivar el recurso"
+    },
+
+    "loans": {
+      "notFound": "Préstamo no encontrado",
+      "alreadyReturned": "El préstamo ya fue devuelto"
+    },
+
+    "locations": {
+      "fetcheFailed": "No se pudo cargar la Ubicación",
+      "alreadyExists": "Ya existe la Ubicación",
+      "createFailed": "No se pudo crear la Ubicación",
+      "notFound": "No se encontró la Ubicación",
+      "updateFailed": "Hubo un error en la actualización",
+      "activated": "Ubicación activada",
+      "deactivated": "Ubicación desactivada",
+      "stateUpdateFailed": "No se pusoactualizar el estado"
+    },
+
+    "reports": {
+      "fetchedFailed": "No se cargaron los datos"
+    },
+
+    "audit": {
+      "pdfFailed": "No se pudo exportar el PDF"
+    }
+  }
+}
