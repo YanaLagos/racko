@@ -26,7 +26,6 @@ function getWhenLabel(fechaISO, t) {
 
   if (sameDay(d, hoy)) return t("dashboard.widget.today", "Hoy");
   if (sameDay(d, manana)) return t("dashboard.widget.tomorrow", "Mañana");
-
   return "";
 }
 
@@ -35,6 +34,7 @@ export default function UpcomingDue() {
   const navigate = useNavigate();
 
   const [items, setItems] = useState([]);
+  const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,12 +43,24 @@ export default function UpcomingDue() {
     async function load() {
       try {
         const resp = await upcomingDueApi();
+
+        // soporta axios o respuesta plana
+        const payload = resp?.data ?? resp;
+
+        let list = [];
+        if (Array.isArray(payload)) list = payload;
+        else if (payload?.ok && Array.isArray(payload?.data)) list = payload.data;
+        else if (Array.isArray(payload?.data)) list = payload.data;
+
         if (!alive) return;
 
-        if (resp?.ok) setItems(resp.data || []);
-        else setItems([]);
+        setItems(list);
+        setIndex(0);
       } catch {
-        setItems([]);
+        if (alive) {
+          setItems([]);
+          setIndex(0);
+        }
       } finally {
         if (alive) setLoading(false);
       }
@@ -60,7 +72,17 @@ export default function UpcomingDue() {
     };
   }, []);
 
-  let badgeText = "";
+  // ROTACIÓN: si hay más de 1, rota cada 8s
+  useEffect(() => {
+    if (items.length <= 1) return;
+
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % items.length);
+    }, 8000);
+
+    return () => clearInterval(id);
+  }, [items]);
+
   let subtitleText = "";
 
   if (loading) {
@@ -68,15 +90,23 @@ export default function UpcomingDue() {
   } else if (items.length === 0) {
     subtitleText = t("dashboard.widget.noItems");
   } else {
-    const first = items[0];
-    const when = getWhenLabel(first.fecha_vencimiento, t);
-    const fecha = formatFecha(first.fecha_vencimiento);
+    const current = items[index] || items[0];
+    const when = getWhenLabel(current.fecha_vencimiento, t);
+    const fecha = formatFecha(current.fecha_vencimiento);
+    const whenPart = `${when} ${fecha}`.trim();
 
-    badgeText = `${when} ${fecha}`.trim();
-
-    subtitleText = `${first.recurso_nombre} ${t(
-      "dashboard.widget.mustBeReturnedBy"
-    )} ${first.usuario_externo_nombre}`;
+    subtitleText = (
+      <>
+        {current.recurso_nombre} {t("dashboard.widget.mustBeReturnedBy")}{" "}
+        <span className="widget-user">{current.usuario_externo_nombre}</span>
+        {whenPart && (
+          <>
+            {" "}
+            — <span className="widget-date">{whenPart}</span>
+          </>
+        )}
+      </>
+    );
   }
 
   return (
@@ -84,14 +114,9 @@ export default function UpcomingDue() {
       <div className="widget-icon"></div>
 
       <div className="widget-content">
-        <div className="widget-title">
-          {t("dashboard.widget.upcomingDueAria")}
-        </div>
-
+        <div className="widget-title">{t("dashboard.widget.upcomingDueAria")}</div>
         <div className="widget-subtitle">{subtitleText}</div>
       </div>
-
-      {badgeText && <div className="widget-badge">{badgeText}</div>}
 
       <div className="widget-controls">
         <button
@@ -106,3 +131,4 @@ export default function UpcomingDue() {
     </div>
   );
 }
+
