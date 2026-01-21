@@ -14,7 +14,7 @@ function buildWhere({ usuario, rut, recurso, dia, desde, hasta, modo }) {
   if (isNonEmptyString(usuario)) {
     const q = `%${usuario.trim()}%`;
     where.push(
-      "(ue.nombre LIKE ? OR ue.apellido LIKE ? OR CONCAT(ue.nombre,' ',ue.apellido) LIKE ?)"
+      "(ue.nombre LIKE ? OR ue.apellido LIKE ? OR CONCAT(ue.nombre,' ',ue.apellido) LIKE ?)",
     );
     params.push(q, q, q);
   }
@@ -111,6 +111,7 @@ async function listarPrestamosPorFrecuencia({
       SELECT
         p.id_prestamo,
         p.id_recurso,
+        r.id_categoria, 
         r.nombre AS nombre_recurso,
         CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
         p.rut_usuario,
@@ -133,6 +134,7 @@ async function listarPrestamosPorFrecuencia({
     SELECT
       id_prestamo,
       id_recurso,
+      id_categoria,
       nombre_recurso,
       prestado_a,
       rut_usuario,
@@ -183,6 +185,7 @@ async function obtenerPrestamosPorFrecuenciaParaReporte({
       SELECT
         p.id_prestamo,
         p.id_recurso,
+        id_categoria,
         r.nombre AS nombre_recurso,
         CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
         p.rut_usuario,
@@ -205,6 +208,7 @@ async function obtenerPrestamosPorFrecuenciaParaReporte({
     SELECT
       id_prestamo,
       id_recurso,
+      id_categoria,
       nombre_recurso,
       prestado_a,
       rut_usuario,
@@ -248,6 +252,8 @@ async function listarPrestamos({
   const query = `
     SELECT
       p.id_prestamo,
+      p.id_recurso,
+      r.id_categoria, 
       r.nombre AS nombre_recurso,
       CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
       p.rut_usuario,
@@ -305,6 +311,8 @@ async function obtenerPrestamosParaReporte({
   const query = `
     SELECT
       p.id_prestamo,
+      id_recurso,
+      id_categoria, 
       r.nombre AS nombre_recurso,
       CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
       p.rut_usuario,

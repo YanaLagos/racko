@@ -61,6 +61,7 @@
     "asc": "Ascendente",
     "desc": "Descendente",
     "edit": "Editar",
+    "select": "Selecciona una opción",
     "lang": {
       "es": "Español",
       "en": "Inglés"
@@ -75,20 +76,54 @@
       "noItems": "No hay vencimientos para hoy ni mañana.",
       "mustBeReturnedBy": "debe ser devuelto por",
       "goToDeadline": "Ver vencimientos"
+    },
+
+    "predictive": {
+      "title": "Riesgo de retraso estimado",
+      "none": "No hay usuarios con riesgo relevante",
+      "associatedTo": "Asociado a: ",
+      "noUsers": "Sin usuarios con riesgo medio/alto",
+      "hint": "Estimación predictiva basada en historial reciente de devoluciones",
+      "level": {
+        "bajo": "Tendencia de retraso: BAJA",
+        "medio": "Tendencia de retraso: MEDIA",
+        "alto": "Tendencia de retraso: ALTA"
+      }
+    },
+
+    "lastMoves": {
+      "title": "Últimos movimientos",
+      "empty": "No hay préstamos que mostrar",
+      "noCategoryTitle": "Sin categoría",
+      "viewCategoryTitle": "Ver categoría",
+
+      "cols": {
+        "resource": "Recurso",
+        "user": "Usuario",
+        "date": "Fecha",
+        "detail": {
+          "detail": "Detalle",
+          "return": "Devolución",
+          "loan": "Préstamo"
+        }
+      }
     }
   },
 
   "assets": {
     "title": "Activos",
     "categories": "Categorías",
-    "resources": "Recursos",
     "createdBy": "Creado por",
-    "deactiveHint": "Al desactivar la categoría, dejará de estar disponible para nuevos recursos. Esta acción se puede revertir."
-  },
+    "deactiveHint": "Al desactivar la categoría, dejará de estar disponible para nuevos recursos. Esta acción se puede revertir.",
+    "categoriesFailed": "No se pudieron cargar las categorías",
+    "categoriesEmpty": "Sin categorías disponibles",
+    "editBlocked": "No se puede editar: recurso prestado",
 
-  "resources": {
-    "titleFallback": "Recursos",
-    "empty": "No hay recursos",
+    "resources": {
+      "title": "Recursos",
+      "titleFallback": "Recursos",
+      "empty": "No hay recursos"
+    },
 
     "view": {
       "label": "Vista",
@@ -104,7 +139,7 @@
       "locationID": "ID de ubicación",
       "location": "Ubicación",
       "resourceId": "ID del recurso",
-      "usage":"Frecuencia de uso",
+      "usage": "Frecuencia de uso",
       "state": "Estado",
       "toDo": "Guardar",
       "loanActive": "¿Está prestado?",
@@ -116,9 +151,9 @@
     },
 
     "actions": {
-      "create0:": "Crear recurso",
-      "viewResources":"Ver recursos",
-      "viewMore":"Ver más",
+      "create": "Crear recurso",
+      "viewResources": "Ver recursos",
+      "viewMore": "Ver más",
       "return": "Devolver",
       "assign": "Asignar",
       "loan": "Prestar/Devolver",
@@ -132,7 +167,7 @@
       "inactive": "Inactivo"
     },
 
-    "assignFlow" : {
+    "assignFlow": {
       "title": "Asignar recurso",
       "subtitle": "Ingrese RUT del usuario externo",
       "rutLabel": "RUT",
@@ -140,22 +175,41 @@
       "userFound": "Usuario verificado"
     },
 
+    "returnFlow": {
+      "title": "Devolución de préstamo",
+      "subtitle": "Revisa los datos del recurso a devolver",
+      "observationsLabel": "Observaciones",
+      "observationsPh": "Puedes editar o agregar nuevas observaciones"
+    },
+
     "confirmLoan": {
       "title": "Confirmar datos",
       "subtitle": "Revise los datos antes de confirmar",
       "option": "Opciones",
-      "assign":"Prestar",
+      "assign": "Prestar",
       "observationsLabel": "Observaciones",
       "observationsPh": "Puedes editar o agregar nuevas observaciones"
-    }
+    },
     
+    "fields": {
+      "prefix": "Nombre / Prefijo",
+      "prefixHint": "Si creas varios, se numerarán como 'Guitarra01, Guitarra02...'",
+      "quantity": "Cantidad",
+      "descLater": "Ingresar descripción más tarde",
+      "descHint": "Si no marcas esto, se guardará la misma descripción para todos los recursos creados.",
+      "location": "Ubicación",
+      "description": "Descripción",
+      "descPh": "Ej: Guitarra acústica, cuerdas nuevas...",
+      "confirm": "Confirma los datos antes de guardar",
+      "descLaterShort": "Se agregará después",
+      "name": "Nombre"
+    }
   },
 
   "audits": {
     "title": "Auditorías de préstamos",
     "loading": "Cargando auditorías…",
     "unknown": "Acción de sistema no especificada",
-
     "internalUsers": {
       "created": "Se creó el usuario interno con email {{email}} y rol {{rol}}",
       "activated": "Se activó la cuenta del usuario ID {{id_usuario_afectado}}",
@@ -167,7 +221,7 @@
     "externalUsers": {
       "created": "Se registró un usuario externo",
       "updated": "Se actualizó un usuario externo",
-      "deactivated": "se desactivó un usuario externo",
+      "deactivated": "Se desactivó un usuario externo",
       "activated": "Se activó un usuario externo",
       "reputationUpdated": "Se ha actualizado la reputación del usuario",
       "rutChanged": "Se modificó el RUT del usuario"
@@ -181,14 +235,14 @@
       "categoryCreated": "Categoría creada",
       "categoryUpdated": "Categoría actualizada",
       "categoryDeactivated": "Categoría desactivada",
-      "categoriaActivated": "Categoría activada",
+      "categoryActivated": "Categoría activada",
       "locationCreated": "Ubicación creada",
       "locationUpdated": "Ubicación actualizada",
       "locationDeactivated": "Ubicación desactivada",
       "locationActivated": "Ubicación activada",
       "resourceCreated": "Recurso creado",
       "resourceUpdated": "Recurso actualizado",
-      "resourseDeactivated": "Recurso desactivado",
+      "resourceDeactivated": "Recurso desactivado",
       "resourceActivated": "Recurso activado"
     },
 
@@ -203,7 +257,6 @@
       "rangeFrom": "Préstamos desde",
       "rangeTo": "Préstamos hasta",
       "modeLabel": "Filtrar",
-
       "mode": {
         "inProgress": "Préstamos en curso",
         "all": "Todos los préstamos",
@@ -236,7 +289,6 @@
       "noObs": "Sin observaciones",
       "editObs": "Editar observación",
       "editPrompt": "Editar observación del préstamo:",
-
       "pagination": {
         "pageOf": "Página {{page}} de {{totalPages}}",
         "prev": "Anterior",
@@ -247,7 +299,6 @@
 
   "users": {
     "title": "Usuarios",
-
     "filters": {
       "name": "Nombre",
       "namePh": "Ej: Ana Pérez",
@@ -293,6 +344,9 @@
       "deactivate": {
         "text": "¿Este usuario ya no requiere acceso?",
         "action": "Desactivar cuenta"
+      },
+      "rutFix": {
+        "title": "Modificar RUT"
       }
     },
 
@@ -306,7 +360,6 @@
       "activate": "Activar",
       "deactivateConfirm": "¿Seguro que deseas desactivar este usuario?"
     },
-
     "empty": {
       "internalUsers": "No se encontraron usuarios internos."
     },
@@ -317,7 +370,6 @@
       "newPasswordOptional": "Nueva contraseña (opcional)",
       "newPasswordOptionalPh": "Se enviará un correo para cambiarla."
     },
-
     "create": {
       "title": "Añadir usuario",
       "confirmTitle": "Confirmar datos",
@@ -325,7 +377,6 @@
       "confirmSubtitle": "Revisa la información antes de guardar.",
       "inviteHint": "Se enviará un correo para que el usuario defina su contraseña.",
       "hint": "RUT, Nombre, Apellido, Email y Teléfono son obligatorios*",
-
       "fields": {
         "rut": "RUT del usuario",
         "rutPh": "Ej: 12569899-0",
@@ -346,7 +397,6 @@
         "rolAdmin": "Administrador",
         "rolColab": "Colaborador"
       },
-
       "actions": {
         "next": "Siguiente",
         "save": "Guardar",
@@ -357,14 +407,12 @@
 
   "administrator": {
     "title": "Administración del sistema",
-
     "activity": {
       "title": "Actividad reciente",
       "viewAll": "Ver historial completo →",
       "empty": "No hay actividad reciente.",
       "unknownUser": "(sin usuario)"
     },
-
     "internalUsers": {
       "sectionTitle": "Usuarios internos",
       "searchPlaceholder": "Buscar por nombre o email",
@@ -387,13 +435,11 @@
       "refValue": "Ref. valor",
       "refValuePh": "Id, nombre o RUT"
     },
-
     "actions": {
       "query": "Consultar",
       "clear": "Limpiar",
       "exportPdf": "Exportar PDF"
     },
-
     "cols": {
       "eventId": "ID",
       "datetime": "Fecha/Hora",
@@ -403,9 +449,8 @@
       "refValue": "Ref. valor",
       "detail": "Detalle"
     },
-
     "table": {
-      "unknounUser": "(sin usuario)",
+      "unknownUser": "(sin usuario)",
       "empty": "No hay registros para mostrar.",
       "total": "Total",
       "pagination": {
@@ -429,7 +474,6 @@
       "inviteSent": "Invitación enviada.",
       "languageUpdated": "Idioma actualizado"
     },
-
     "externalUsers": {
       "created": "Usuario externo creado",
       "updated": "Usuario externo actualizado",
@@ -437,12 +481,10 @@
       "activated": "Usuario externo activado",
       "fetched": "Usuarios cargados"
     },
-
     "categories": {
       "created": "Categoría creada",
       "updated": "Categoría actualizada"
     },
-
     "loans": {
       "registered": "Préstamo registrado",
       "returned": "Préstamo devuelto",
@@ -450,7 +492,6 @@
       "historyFetched": "Historial exitoso",
       "upcomingDueFetched": "Fecha de vencimiento cargada"
     },
-
     "resources": {
       "fetched": "Recursos cargados",
       "created": "Recurso creado",
@@ -458,13 +499,11 @@
       "activated": "Recurso activado",
       "deactivated": "Recurso desactivado"
     },
-
     "locations": {
       "fetched": "Ubicación cargada",
       "created": "Ubicación creada",
       "updated": "Ubicación actualizada"
     },
-
     "auth": {
       "loginOk": "Inicio de sesión exitoso",
       "resetRequested": "Se ha enviado un correo para reestablecer la contraseña",
@@ -509,20 +548,18 @@
       "inviteFailed": "No se pudo enviar la invitación.",
       "inactiveUser": "No se puede invitar a un usuario inactivo."
     },
-
-    "externalUsers":{
+    "externalUsers": {
       "fetchFailed": "No se pudo cargar el usuario",
       "notFound": "No se encontró el usuario externo",
-      "rutalreadyExists": "Ya existe el rut ingreado",
+      "rutAlreadyExists": "Ya existe el rut ingresado",
       "createFailed": "No se pudo crear el Usuario externo",
       "updateFailed": "No se pudo actualizar el usuario externo",
       "stateUpdateFailed": "No se pudo activar/desactivar el usuario externo",
-      "notFounfMsg": "El usuario no existe. ¿Desea registralo?"
+      "notFoundMsg": "El usuario no existe. ¿Desea registrarlo?"
     },
     "email": {
       "sendFailed": "No se pudo enviar el correo."
     },
-
     "categories": {
       "alreadyExists": "La categoría ya existe",
       "createdFailed": "Hubo un error en la creación de la categoría",
@@ -532,7 +569,6 @@
       "deactivated": "Categoría desactivada",
       "stateUpdateFailed": "No se pudo desactivar/activar la categoría"
     },
-
     "resources": {
       "notFound": "No se encontró el recurso",
       "alreadyLoaned": "Recurso ya prestado",
@@ -542,29 +578,26 @@
       "updateFailed": "No se pudo actualizar el recurso",
       "stateUpdateFailed": "No se pudo activar/desactivar el recurso"
     },
-
     "loans": {
       "notFound": "Préstamo no encontrado",
       "alreadyReturned": "El préstamo ya fue devuelto"
     },
-
     "locations": {
-      "fetcheFailed": "No se pudo cargar la Ubicación",
+      "fetchFailed": "No se pudo cargar la Ubicación",
       "alreadyExists": "Ya existe la Ubicación",
       "createFailed": "No se pudo crear la Ubicación",
       "notFound": "No se encontró la Ubicación",
       "updateFailed": "Hubo un error en la actualización",
       "activated": "Ubicación activada",
       "deactivated": "Ubicación desactivada",
-      "stateUpdateFailed": "No se pusoactualizar el estado"
+      "stateUpdateFailed": "No se pudo actualizar el estado"
     },
-
     "reports": {
       "fetchedFailed": "No se cargaron los datos"
     },
-
     "audit": {
-      "pdfFailed": "No se pudo exportar el PDF"
+      "pdfFailed": "No se pudo exportar el PDF",
+      "fetchFailed": "No se cargaron los datos"
     }
   }
 }

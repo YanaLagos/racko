@@ -205,11 +205,11 @@ export default function Activos() {
       {loading && <p>{t("common.loading")}</p>}
 
       {!loading && errorKey && (
-        <p>{t(errorKey, "No se pudieron cargar las categorías.")}</p>
+        <p>{t("assets.categoriesFailed", "No se pudieron cargar las categorías.")}</p>
       )}
 
       {!loading && !errorKey && categorias.length === 0 && (
-        <p>{t("dashboard.widget.none", "Sin categorías disponibles.")}</p>
+        <p>{t("assets.categoriesEmpty", "Sin categorías disponibles.")}</p>
       )}
 
       {!loading && !errorKey && categorias.length > 0 && (
@@ -230,7 +230,7 @@ export default function Activos() {
                     <div className="cat-meta">
                       <div className="cat-meta-line">
                         <strong>{c.recursos_count ?? 0}</strong>{" "}
-                        {t("assets.resources", "recursos")}
+                        {t("assets.resources.title", "recursos")}
                       </div>
 
                       <div className="cat-meta-line">

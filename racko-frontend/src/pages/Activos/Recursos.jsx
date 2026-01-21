@@ -422,7 +422,7 @@ export default function Recursos() {
     }
   }
 
-  const title = categoria?.nombre || t("resources.titleFallback");
+  const title = categoria?.nombre || t("assets.resources.titleFallback");
   const desc = categoria?.descripcion ? String(categoria.descripcion) : "";
 
   return (
@@ -436,20 +436,20 @@ export default function Recursos() {
             onClick={openCreateResourceModal}
             disabled={loading}
           >
-            {t("resources.actions.create", "Crear recurso")}
+            {t("assets.actions.create", "Crear recurso")}
           </button>
         )}
 
         <div className="res-view-toggle">
           <span className="res-view-label">
-            {t("resources.viewLabel", "Vista")}
+            {t("assets.view.label", "Vista")}
           </span>
           <button
             type="button"
             className={`res-icon-btn ${view === "cards" ? "active" : ""}`}
             onClick={() => setView("cards")}
-            aria-label={t("resources.view.cards")}
-            title={t("resources.view.cards")}
+            aria-label={t("assets.view.cards")}
+            title={t("assets.view.cards")}
           >
             {/* tu svg cards */}
           </button>
@@ -458,8 +458,8 @@ export default function Recursos() {
             type="button"
             className={`res-icon-btn ${view === "list" ? "active" : ""}`}
             onClick={() => setView("list")}
-            aria-label={t("resources.view.list")}
-            title={t("resources.view.list")}
+            aria-label={t("assets.view.list")}
+            title={t("assets.view.list")}
           ></button>
         </div>
       </div>
@@ -472,7 +472,7 @@ export default function Recursos() {
       {!loading && errorKey && <p className="error">{t(errorKey)}</p>}
 
       {!loading && !errorKey && recursos.length === 0 && (
-        <p>{t("resources.empty")}</p>
+        <p>{t("assets.resources.empty")}</p>
       )}
 
       {!loading && !errorKey && recursos.length > 0 && (
@@ -505,7 +505,7 @@ export default function Recursos() {
                       <div className="res-card-divider" />
 
                       <div className="res-card-label">
-                        {t("resources.details.loanStart")}
+                        {t("assets.details.loanStart")}
                       </div>
                       <div className="res-card-date">
                         {ocupado ? fmtDateCL(r.fecha_prestamo) : "--"}
@@ -516,7 +516,7 @@ export default function Recursos() {
                         className="res-card-link"
                         onClick={() => openDetailsModal(r)}
                       >
-                        {t("resources.actions.viewMore")}
+                        {t("assets.actions.viewMore")}
                       </button>
 
                       <button
@@ -529,8 +529,8 @@ export default function Recursos() {
                         }
                       >
                         {ocupado
-                          ? t("resources.actions.return")
-                          : t("resources.actions.assign")}
+                          ? t("assets.actions.return")
+                          : t("assets.actions.assign")}
                       </button>
                     </article>
                   </div>
@@ -544,13 +544,13 @@ export default function Recursos() {
                   <tr>
                     <th>ID</th>
                     <th>{t("audits.cols.resource", "Recurso")}</th>
-                    <th>{t("resources.details.description")}</th>
-                    <th>{t("resources.details.category")}</th>
-                    <th>{t("resources.details.location")}</th>
-                    <th>{t("resources.details.usage")}</th>
-                    <th>{t("resources.details.state")}</th>
-                    <th>{t("resources.actions.loan")}</th>
-                    <th>{t("resources.details.details", "Ver más")}</th>
+                    <th>{t("assets.details.description")}</th>
+                    <th>{t("assets.details.category")}</th>
+                    <th>{t("assets.details.location")}</th>
+                    <th>{t("assets.details.usage")}</th>
+                    <th>{t("assets.details.state")}</th>
+                    <th>{t("assets.actions.loan")}</th>
+                    <th>{t("assets.details.details", "Ver más")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -576,8 +576,8 @@ export default function Recursos() {
                         <td>{safe(r.uso_acumulado)}</td>
                         <td>
                           {r.estado === 1
-                            ? t("resources.status.active")
-                            : t("resources.status.inactive")}
+                            ? t("assets.status.active")
+                            : t("assets.status.inactive")}
                         </td>
                         <td>
                           <button
@@ -588,8 +588,8 @@ export default function Recursos() {
                             }
                             title={
                               ocupado
-                                ? t("resources.actions.return")
-                                : t("resources.actions.assign")
+                                ? t("assets.actions.return")
+                                : t("assets.actions.assign")
                             }
                           >
                             {ocupado ? "↩" : "+"}
@@ -601,7 +601,7 @@ export default function Recursos() {
                             className="btn-secondary"
                             onClick={() => openDetailsModal(r)}
                           >
-                            {t("resources.actions.viewMore", "Ver más")}
+                            {t("assets.actions.viewMore", "Ver más")}
                           </button>
                         </td>
                       </tr>
@@ -628,7 +628,7 @@ export default function Recursos() {
           >
             <div className="modal-header-gradient">
               <div className="header-title-group">
-                <h3>{t("resources.details.title")}</h3>
+                <h3>{t("assets.details.title")}</h3>
                 <p className="header-subtitle">{selected.nombre}</p>
               </div>
 
@@ -657,7 +657,7 @@ export default function Recursos() {
               <div className="res-modal-info">
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.resourceId")}:{" "}
+                    {t("assets.details.resourceId")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {safe(selected.id_recurso)}
@@ -666,7 +666,7 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.category", "Categoría")}:{" "}
+                    {t("assets.details.category", "Categoría")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {safe(selected.nombre_categoria)}
@@ -675,7 +675,7 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.location", "Ubicación")}:{" "}
+                    {t("assets.details.location", "Ubicación")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {safe(selected.nombre_ubicacion)}
@@ -684,7 +684,7 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.description")}:{" "}
+                    {t("assets.details.description")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {safe(selected.descripcion)}
@@ -693,7 +693,7 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.usage")}:{" "}
+                    {t("assets.details.usage")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {safe(selected.uso_acumulado)}
@@ -702,12 +702,12 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.state")}:{" "}
+                    {t("assets.details.state")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {selected.estado === 1
-                      ? t("resources.status.active")
-                      : t("resources.status.inactive")}
+                      ? t("assets.status.active")
+                      : t("assets.status.inactive")}
                   </span>
                 </div>
 
@@ -715,7 +715,7 @@ export default function Recursos() {
 
                 <div className="res-info-row">
                   <span className="res-info-k">
-                    {t("resources.details.loanActive")}:{" "}
+                    {t("assets.details.loanActive")}:{" "}
                   </span>
                   <span className="res-info-v">
                     {selected.id_prestamo_activo
@@ -728,7 +728,7 @@ export default function Recursos() {
                   <>
                     <div className="res-info-row">
                       <span className="res-info-k">
-                        {t("resources.details.loanId")}:{" "}
+                        {t("assets.details.loanId")}:{" "}
                       </span>
                       <span className="res-info-v">
                         {safe(selected.id_prestamo_activo)}
@@ -736,7 +736,7 @@ export default function Recursos() {
                     </div>
                     <div className="res-info-row">
                       <span className="res-info-k">
-                        {t("resources.details.loanStart")}:{" "}
+                        {t("assets.details.loanStart")}:{" "}
                       </span>
                       <span className="res-info-v">
                         {fmtDateCL(selected.fecha_prestamo)}
@@ -744,7 +744,7 @@ export default function Recursos() {
                     </div>
                     <div className="res-info-row">
                       <span className="res-info-k">
-                        {t("resources.details.loanDue")}:{" "}
+                        {t("assets.details.loanDue")}:{" "}
                       </span>
                       <span className="res-info-v">
                         {fmtDateCL(selected.fecha_vencimiento)}
@@ -752,7 +752,7 @@ export default function Recursos() {
                     </div>
                     <div className="res-info-row">
                       <span className="res-info-k">
-                        {t("resources.details.loanRut")}:{" "}
+                        {t("assets.details.loanRut")}:{" "}
                       </span>
                       <span className="res-info-v">
                         {safe(selected.rut_usuario)}
@@ -760,7 +760,7 @@ export default function Recursos() {
                     </div>
                     <div className="res-info-row">
                       <span className="res-info-k">
-                        {t("resources.details.loanTo")}:{" "}
+                        {t("assets.details.loanTo")}:{" "}
                       </span>
                       <span className="res-info-v">
                         {safe(selected.prestado_a)}
@@ -788,10 +788,10 @@ export default function Recursos() {
             aria-modal="true"
           >
             <div className="modal-header-simple">
-              <h3>{t("resources.assignFlow.title", "Asignar Recurso")}</h3>
+              <h3>{t("assets.assignFlow.title", "Asignar Recurso")}</h3>
               <p>
                 {t(
-                  "resources.assignFlow.subtitle",
+                  "assets.assignFlow.subtitle",
                   "Ingrese el RUT del usuario externo",
                 )}
               </p>
@@ -816,14 +816,14 @@ export default function Recursos() {
 
             <div className="modal-form-grid">
               <div className="field full">
-                <label>{t("resources.assignFlow.rutLabel", "RUT")}</label>
+                <label>{t("assets.assignFlow.rutLabel", "RUT")}</label>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <input
                     className="input-modal-user"
                     value={rutInput}
                     onChange={(e) => setRutInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && lookupUserByRut()}
-                    placeholder={t("resources.assignFlow.rutPh", "12345678-k")}
+                    placeholder={t("assets.assignFlow.rutPh", "12345678-k")}
                     disabled={lookupLoading}
                     autoFocus
                   />
@@ -835,7 +835,7 @@ export default function Recursos() {
                   <div className="res-mini animated-fade-in">
                     <div className="res-mini-title">
                       {t(
-                        "resources.assignFlow.userFound",
+                        "assets.assignFlow.userFound",
                         "Usuario Verificado",
                       )}
                     </div>
@@ -860,7 +860,7 @@ export default function Recursos() {
                   type="button"
                   onClick={goToConfirmLoan}
                 >
-                  {t("resources.actions.continue", "Continuar")}
+                  {t("assets.actions.continue", "Continuar")}
                 </button>
               ) : (
                 <>
@@ -873,7 +873,7 @@ export default function Recursos() {
                         setOpenCreateExternal(true);
                       }}
                     >
-                      {t("resources.actions.register", "Registrar Nuevo")}
+                      {t("assets.actions.register", "Registrar Nuevo")}
                     </button>
                   )}
 
@@ -916,8 +916,8 @@ export default function Recursos() {
             role="dialog"
             aria-modal="true"
           >
-            <h3>{t("resources.confirmLoan.title")}</h3>
-            <p>{t("resources.confirmLoan.subtitle")}</p>
+            <h3>{t("assets.confirmLoan.title")}</h3>
+            <p>{t("assets.confirmLoan.subtitle")}</p>
 
             <div className="res-modal-info">
               <div className="res-info-row">
@@ -928,13 +928,13 @@ export default function Recursos() {
               </div>
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanTo")}:
+                  {t("assets.details.loanTo")}:
                 </span>
                 <span className="res-info-v">{fullName(externalUser)}</span>
               </div>
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanRut")}:
+                  {t("assets.details.loanRut")}:
                 </span>
                 <span className="res-info-v">{safe(externalUser.rut)}</span>
               </div>
@@ -942,7 +942,7 @@ export default function Recursos() {
 
             <div className="res-info-k">
               <label>
-                {t("resources.details.loanDue", "Fecha de vencimiento")}
+                {t("assets.details.loanDue", "Fecha de vencimiento")}
               </label>
               <input
                 type="date"
@@ -952,17 +952,17 @@ export default function Recursos() {
                 min={new Date().toISOString().split("T")[0]}
               />
               <small className="field-muted">
-                {t("resources.confirmLoan.option")}
+                {t("assets.confirmLoan.option")}
               </small>
             </div>
 
             <div className="field" style={{ marginTop: 14 }}>
-              <label>{t("resources.confirmLoan.observationsLabel")}</label>
+              <label>{t("assets.confirmLoan.observationsLabel")}</label>
               <textarea
                 className="res-textarea"
                 value={loanObs}
                 onChange={(e) => setLoanObs(e.target.value)}
-                placeholder={t("resources.confirmLoan.observationsPh")}
+                placeholder={t("assets.confirmLoan.observationsPh")}
                 rows={4}
               />
             </div>
@@ -974,7 +974,7 @@ export default function Recursos() {
                 onClick={confirmLoan}
                 disabled={loading}
               >
-                {t("resources.confirmLoan.assign")}
+                {t("assets.confirmLoan.assign")}
               </button>
               <button
                 className="btn-modal-cancel"
@@ -1002,13 +1002,13 @@ export default function Recursos() {
             role="dialog"
             aria-modal="true"
           >
-            <h3>{t("resources.returnFlow.title")}</h3>
-            <p>{t("resources.returnFlow.subtitle")}</p>
+            <h3>{t("assets.returnFlow.title")}</h3>
+            <p>{t("assets.returnFlow.subtitle")}</p>
 
             <div className="res-modal-info">
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanId")}
+                  {t("assets.details.loanId")}
                 </span>
                 <span className="res-info-v">
                   {safe(selected.id_prestamo_activo)}
@@ -1022,13 +1022,13 @@ export default function Recursos() {
               </div>
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanTo")}
+                  {t("assets.details.loanTo")}
                 </span>
                 <span className="res-info-v">{safe(selected.prestado_a)}</span>
               </div>
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanStart")}
+                  {t("assets.details.loanStart")}
                 </span>
                 <span className="res-info-v">
                   {fmtDateCL(selected.fecha_prestamo)}
@@ -1036,7 +1036,7 @@ export default function Recursos() {
               </div>
               <div className="res-info-row">
                 <span className="res-info-k">
-                  {t("resources.details.loanDue")}
+                  {t("assets.details.loanDue")}
                 </span>
                 <span className="res-info-v">
                   {fmtDateCL(selected.fecha_vencimiento)}
@@ -1045,12 +1045,12 @@ export default function Recursos() {
             </div>
 
             <div className="field" style={{ marginTop: 14 }}>
-              <label>{t("resources.returnFlow.observationsLabel")}</label>
+              <label>{t("assets.returnFlow.observationsLabel")}</label>
               <textarea
                 className="res-textarea"
                 value={returnObs}
                 onChange={(e) => setReturnObs(e.target.value)}
-                placeholder={t("resources.returnFlow.observationsPh")}
+                placeholder={t("assets.returnFlow.observationsPh")}
                 rows={4}
               />
             </div>
@@ -1062,7 +1062,7 @@ export default function Recursos() {
                 onClick={confirmReturn}
                 disabled={loading}
               >
-                {t("resources.actions.return")}
+                {t("assets.actions.return")}
               </button>
               <button
                 className="btn-modal-cancel"
@@ -1070,7 +1070,7 @@ export default function Recursos() {
                 onClick={() => setOpenReturn(false)}
                 disabled={loading}
               >
-                {t("resources.actions.cancel")}
+                {t("common.cancel")}
               </button>
             </div>
           </div>
@@ -1098,12 +1098,12 @@ export default function Recursos() {
             role="dialog"
             aria-modal="true"
           >
-            <h3>{t("resources.actions.create", "Crear recurso")}</h3>
+            <h3>{t("assets.actions.create", "Crear recurso")}</h3>
 
             {resourceErrorKey && <p className="error">{t(resourceErrorKey)}</p>}
 
             <div className="field" style={{ marginTop: 10 }}>
-              <label>{t("resources.fields.prefix", "Nombre / prefijo")}</label>
+              <label>{t("assets.fields.prefix", "Nombre / prefijo")}</label>
               <input
                 className="input"
                 value={resourceForm.nombre}
@@ -1115,14 +1115,14 @@ export default function Recursos() {
               />
               <small className="field-muted">
                 {t(
-                  "resources.create.prefixHint",
+                  "assets.fields.prefixHint",
                   'Si creas varios, se numerarán como "Guitarra01, Guitarra02..."',
                 )}
               </small>
             </div>
 
             <div className="field" style={{ marginTop: 10 }}>
-              <label>{t("resources.fields.quantity", "Cantidad")}</label>
+              <label>{t("assets.fields.quantity", "Cantidad")}</label>
               <input
                 className="input"
                 type="number"
@@ -1152,20 +1152,20 @@ export default function Recursos() {
                   disabled={savingResource}
                 />
                 {t(
-                  "resources.create.descLater",
+                  "assets.field.descLater",
                   "Ingresar descripción más tarde (individual)",
                 )}
               </label>
 
               <small className="field-muted">
                 {t(
-                  "resources.create.descHint",
+                  "assets.fields.descHint",
                   "Si no marcas esto, se guardará la misma descripción para todos los recursos creados.",
                 )}
               </small>
             </div>
             <div className="field" style={{ marginTop: 10 }}>
-              <label>{t("resources.fields.location", "Ubicación")}</label>
+              <label>{t("assets.fields.location", "Ubicación")}</label>
 
               <select
                 className="input"
@@ -1193,7 +1193,7 @@ export default function Recursos() {
             </div>
 
             <div className="field" style={{ marginTop: 10 }}>
-              <label>{t("resources.fields.description", "Descripción")}</label>
+              <label>{t("assets.fields.description", "Descripción")}</label>
               <textarea
                 className="modal-category-textarea"
                 rows={4}
@@ -1206,7 +1206,7 @@ export default function Recursos() {
                 }
                 disabled={savingResource || !resourceForm.usarDescripcionGlobal}
                 placeholder={t(
-                  "resources.create.descPh",
+                  "assets.fields.descPh",
                   "Ej: Guitarra acústica, cuerdas nuevas...",
                 )}
               />
@@ -1236,7 +1236,7 @@ export default function Recursos() {
               <div className="modal-confirm-section" style={{ marginTop: 14 }}>
                 <p className="modal-hint">
                   {t(
-                    "resources.create.confirm",
+                    "assets.fields.confirm",
                     "Confirma los datos antes de guardar:",
                   )}
                 </p>
@@ -1244,19 +1244,19 @@ export default function Recursos() {
                 <div style={{ fontSize: 14, lineHeight: 1.5 }}>
                   <div>
                     <strong>
-                      {t("resources.fields.prefix", "Nombre / prefijo")}:
+                      {t("assets.fields.prefix", "Nombre / prefijo")}:
                     </strong>{" "}
                     {resourceForm.nombre || "--"}
                   </div>
                   <div>
                     <strong>
-                      {t("resources.fields.quantity", "Cantidad")}:
+                      {t("assets.fields.quantity", "Cantidad")}:
                     </strong>{" "}
                     {resourceForm.cantidad || 1}
                   </div>
                   <div>
                     <strong>
-                      {t("resources.fields.location", "Ubicación")}:
+                      {t("assets.fields.location", "Ubicación")}:
                     </strong>{" "}
                     {ubicacion.find(
                       (u) =>
@@ -1266,12 +1266,12 @@ export default function Recursos() {
                   </div>
                   <div>
                     <strong>
-                      {t("resources.fields.description", "Descripción")}:
+                      {t("assets.fields.description", "Descripción")}:
                     </strong>{" "}
                     {resourceForm.usarDescripcionGlobal
                       ? resourceForm.descripcion?.trim() || "--"
                       : t(
-                          "resources.create.descLaterShort",
+                          "assets.field.descLaterShort",
                           "Se agregará después",
                         )}
                   </div>
@@ -1327,7 +1327,7 @@ export default function Recursos() {
             {isOccupied(selected) && (
               <p className="error">
                 {t(
-                  "resources.editBlocked",
+                  "assets.editBlocked",
                   "No se puede editar: recurso prestado",
                 )}
               </p>
@@ -1345,7 +1345,7 @@ export default function Recursos() {
             </div>
 
             <div className="field" style={{ marginTop: 12 }}>
-              <label>{t("resources.fields.name", "Nombre")}</label>
+              <label>{t("assets.fields.name", "Nombre")}</label>
               <input
                 className="input"
                 value={resourceForm.nombre}
@@ -1357,7 +1357,7 @@ export default function Recursos() {
             </div>
 
             <div className="field" style={{ marginTop: 12 }}>
-              <label>{t("resources.fields.description", "Descripción")}</label>
+              <label>{t("assets.fields.description", "Descripción")}</label>
               <textarea
                 className="modal-category-textarea"
                 rows={4}
@@ -1401,7 +1401,7 @@ export default function Recursos() {
             >
               <p className="modal-form-hint">
                 {t(
-                  "resources.deactivateHint",
+                  "assets.deactivateHint",
                   "Al desactivar el recurso, dejará de estar disponible para nuevos préstamos. Esta acción se puede revertir desde administración.",
                 )}
               </p>

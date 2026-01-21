@@ -1,7 +1,9 @@
+const db = require("../config/db");
+
 async function calcularRiesgoRetraso(connOrDb, rutUsuarioExterno, limit = 10) {
   const rut = String(rutUsuarioExterno || '').trim();
   const n = Number(limit) || 10;
-
+  
   if (!rut) {
     return { total: 0, atrasos: 0, probabilidad: null, nivel: 'SIN_DATOS', muestra: 0 };
   }
@@ -51,4 +53,43 @@ async function calcularRiesgoRetraso(connOrDb, rutUsuarioExterno, limit = 10) {
   };
 }
 
-module.exports = { calcularRiesgoRetraso };
+async function obtenerUsuariosPredictivo({ max = 5, hist = 10 } = {}) {
+  const maxN = Math.min(5, Math.max(1, Number(max) || 5));
+  const histN = Math.min(50, Math.max(1, Number(hist) || 10));
+
+  const [usuarios] = await db.query(`
+    SELECT rut, nombre, apellido
+    FROM usuario_externo
+    WHERE estado = 1
+  `);
+
+  const resultados = [];
+
+  for (const u of usuarios) {
+    const riesgo = await calcularRiesgoRetraso(db, u.rut, histN);
+
+    if (riesgo.nivel === "MEDIO" || riesgo.nivel === "ALTO") {
+      resultados.push({
+        rut: u.rut,
+        nombre: u.nombre,
+        apellido: u.apellido,
+        probabilidad: riesgo.probabilidad,
+        nivel: riesgo.nivel,
+      });
+    }
+  }
+
+  resultados.sort((a, b) => {
+    const pa = a.probabilidad == null ? -1 : a.probabilidad;
+    const pb = b.probabilidad == null ? -1 : b.probabilidad;
+    return pb - pa;
+  });
+
+  return resultados.slice(0, maxN);
+}
+
+module.exports = {
+  calcularRiesgoRetraso,
+  obtenerUsuariosPredictivo,
+};
+

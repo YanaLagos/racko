@@ -638,14 +638,6 @@ const Administracion = () => {
               </div>
 
               <div className="field full">
-                <label>{t("users.edit.newPasswordOptional")}</label>
-                <input
-                  type="password"
-                  className="input-modal-user"
-                  placeholder={t("users.edit.newPasswordOptionalPh")}
-                  value={editPassword}
-                  onChange={(e) => setEditPassword(e.target.value)}
-                />
                 <div className="modal-form-hint">
                   {t("administrator.internalUsers.roleRestriction")}
                 </div>

@@ -14,6 +14,7 @@
   --color-fourth-soft: #be59c2;
   --color-fourth-light: #faccfc ;
   --gradient-secondary: linear-gradient(180deg, #ED80F0, #B565FB);
+  --gradient-third: linear-gradient(90deg, #B565FB, #ffffff);
 
   --color-unavailable: #E40404;
   --color-available: #62BC5C;

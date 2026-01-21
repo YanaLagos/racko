@@ -1,22 +1,17 @@
 import UpcomingDueWidget from "../components/layout/UpcomingDue";
+import UltimosPrestamos from "../components/common/UltimosPrestamos";
+import PredictivoWidget from "../components/common/PredictivoWidget";
 
 export default function Inicio() {
-  const tomorrowDueItems = [
-    {
-      fecha_vencimiento: "2026-01-11",
-      recurso_nombre: "recurso_00",
-      usuario_externo_nombre: "Juan Pérez",
-    },
-    {
-      fecha_vencimiento: "2026-01-11",
-      recurso_nombre: "recurso_01",
-      usuario_externo_nombre: "María López",
-    },
-  ];
-
+  console.log("INICIO MONTADO");
   return (
     <div className="dashboard-grid">
-      <UpcomingDueWidget items={tomorrowDueItems} />
+      <UpcomingDueWidget />
+
+      <div className="dashboard-row-2">
+        <UltimosPrestamos limit={5} />
+        <PredictivoWidget />
+      </div>
     </div>
   );
 }

@@ -4,7 +4,8 @@ const router = express.Router();
 const { verificarToken, esAdminOColaborador } = require('../middlewares/auth.middleware');
 const prestamosService = require('../services/prestamo.service');
 const { sendOk, sendError } = require('../utils/http');
-const { getVencimientosWidget } = require('../controllers/prestamo.controller');
+const { getVencimientosWidget, getPredictivoWidget  } = require('../controllers/prestamo.controller');
+
 
 
 function toInt(value) {
@@ -97,10 +98,17 @@ router.get('/historial', verificarToken, esAdminOColaborador, async (req, res) =
 });
 
 router.get(
-  '/vencimientos/widget',
+  "/vencimientos/widget",
   verificarToken,
   esAdminOColaborador,
   getVencimientosWidget
+);
+
+router.get(
+  "/predictivo",
+  verificarToken,
+  esAdminOColaborador,
+  getPredictivoWidget 
 );
 
 module.exports = router;
