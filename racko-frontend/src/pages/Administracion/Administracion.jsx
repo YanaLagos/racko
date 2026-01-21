@@ -35,7 +35,8 @@ const Administracion = () => {
   // Modal editar
   const [isModalEditarOpen, setIsModalEditarOpen] = useState(false);
   const [userEdit, setUserEdit] = useState(null);
-  const [editPassword, setEditPassword] = useState(""); 
+  const [editPassword, setEditPassword] = useState("");
+  const [openConfirmEstado, setOpenConfirmEstado] = useState(false);
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -44,10 +45,10 @@ const Administracion = () => {
       const resEvents = await listarMovimientosAuditoriaApi({ limit: 5 });
 
       setUsuarios(
-        resUsers?.ok && Array.isArray(resUsers.data) ? resUsers.data : []
+        resUsers?.ok && Array.isArray(resUsers.data) ? resUsers.data : [],
       );
       setEventos(
-        resEvents?.ok && Array.isArray(resEvents.data) ? resEvents.data : []
+        resEvents?.ok && Array.isArray(resEvents.data) ? resEvents.data : [],
       );
     } catch (error) {
       console.error("Error cargando administración:", error);
@@ -70,7 +71,7 @@ const Administracion = () => {
       (u) =>
         (u.nombre || "").toLowerCase().includes(q) ||
         (u.apellido || "").toLowerCase().includes(q) ||
-        (u.email || "").toLowerCase().includes(q)
+        (u.email || "").toLowerCase().includes(q),
     );
   }, [usuarios, busqueda]);
 
@@ -125,7 +126,7 @@ const Administracion = () => {
       }
     } catch (error) {
       alert(
-        t(error.response?.data?.error || "errors.internalUsers.createFailed")
+        t(error.response?.data?.error || "errors.internalUsers.createFailed"),
       );
     }
   };
@@ -133,15 +134,10 @@ const Administracion = () => {
   const handleToggleEstado = async (user) => {
     const nuevoEstado = user.estado === 1 ? 0 : 1;
 
-    if (nuevoEstado === 0) {
-      const ok = window.confirm(t("users.actions.deactivateConfirm"));
-      if (!ok) return;
-    }
-
     try {
       const res = await cambiarEstadoUsuarioInternoApi(
         user.id_usuario,
-        nuevoEstado
+        nuevoEstado,
       );
       if (res?.ok) {
         await cargarDatos();
@@ -149,7 +145,7 @@ const Administracion = () => {
         alert(
           nuevoEstado === 1
             ? t("success.internalUsers.activated")
-            : t("success.internalUsers.deactivated")
+            : t("success.internalUsers.deactivated"),
         );
       } else {
         alert(t("errors.internalUsers.stateUpdateFailed"));
@@ -158,8 +154,8 @@ const Administracion = () => {
       alert(
         t(
           error.response?.data?.error ||
-            "errors.internalUsers.stateUpdateFailed"
-        )
+            "errors.internalUsers.stateUpdateFailed",
+        ),
       );
     }
   };
@@ -194,7 +190,7 @@ const Administracion = () => {
 
       const res = await actualizarUsuarioInternoApi(
         userEdit.id_usuario,
-        payload
+        payload,
       );
 
       if (res?.ok) {
@@ -209,7 +205,7 @@ const Administracion = () => {
       }
     } catch (error) {
       alert(
-        t(error.response?.data?.error || "errors.internalUsers.updateFailed")
+        t(error.response?.data?.error || "errors.internalUsers.updateFailed"),
       );
     }
   };
@@ -228,7 +224,7 @@ const Administracion = () => {
       }
     } catch (error) {
       alert(
-        t(error.response?.data?.error || "errors.internalUsers.inviteFailed")
+        t(error.response?.data?.error || "errors.internalUsers.inviteFailed"),
       );
     }
   };
@@ -301,7 +297,7 @@ const Administracion = () => {
                   className="search-input-admin"
                   type="text"
                   placeholder={t(
-                    "administrator.internalUsers.searchPlaceholder"
+                    "administrator.internalUsers.searchPlaceholder",
                   )}
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
@@ -674,26 +670,105 @@ const Administracion = () => {
               <button
                 type="button"
                 className="btn-deactivate"
+                onClick={() => setOpenConfirmEstado(true)}
+              >
+                {userEdit.estado === 1
+                  ? t("users.actions.deactivate")
+                  : t("users.actions.activate")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL CONFIRMAR CAMBIO DE ESTADO */}
+      {openConfirmEstado && userEdit && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={() => setOpenConfirmEstado(false)}
+          role="presentation"
+        >
+          <div
+            className="modal"
+            onMouseDown={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            {userEdit.estado === 1 ? (
+              <>
+                <h3>
+                  {t("users.modal.deactivate.title", "¿Desactivar usuario?")}
+                </h3>
+
+                <p className="modal-form-hint" style={{ marginTop: 8 }}>
+                  {t(
+                    "users.actions.deactivateConfirm",
+                    "¿Estás seguro/a que deseas desactivar este usuario?",
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
+                <h3>{t("users.modal.activate.title", "¿Activar usuario?")}</h3>
+
+                <p className="modal-form-hint" style={{ marginTop: 8 }}>
+                  {t(
+                    "users.actions.activateConfirm",
+                    "¿Estás seguro/a que deseas activar este usuario?",
+                  )}
+                </p>
+              </>
+            )}
+
+            <div className="modal-review" style={{ marginTop: 10 }}>
+              <div className="modal-review-row">
+                <span className="modal-review-label">
+                  {t("users.cols.id", "ID")}:
+                </span>
+                <span className="modal-review-value">
+                  {userEdit.id_usuario}
+                </span>
+              </div>
+
+              <div className="modal-review-row">
+                <span className="modal-review-label">
+                  {t("users.cols.name", "Nombre")}:
+                </span>
+                <span className="modal-review-value">
+                  {userEdit.nombre} {userEdit.apellido}
+                </span>
+              </div>
+
+              <div className="modal-review-row">
+                <span className="modal-review-label">
+                  {t("users.cols.email", "Email")}:
+                </span>
+                <span className="modal-review-value">{userEdit.email}</span>
+              </div>
+            </div>
+
+            <div className="modal-actions" style={{ marginTop: 16 }}>
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setOpenConfirmEstado(false)}
+              >
+                {t("common.cancel")}
+              </button>
+
+              <button
+                type="button"
+                className="btn-danger"
                 onClick={async () => {
-                  const nuevoEstado = userEdit.estado === 1 ? 0 : 1;
-
-                  if (nuevoEstado === 0) {
-                    const ok = window.confirm(
-                      t("users.actions.deactivateConfirm")
-                    );
-                    if (!ok) return;
-                  }
-
                   await handleToggleEstado(userEdit);
-
+                  setOpenConfirmEstado(false);
                   setIsModalEditarOpen(false);
                   setUserEdit(null);
                   setEditPassword("");
                 }}
               >
                 {userEdit.estado === 1
-                  ? t("users.actions.deactivate")
-                  : t("users.actions.activate")}
+                  ? t("users.actions.deactivate", "Desactivar")
+                  : t("users.actions.activate", "Activar")}
               </button>
             </div>
           </div>

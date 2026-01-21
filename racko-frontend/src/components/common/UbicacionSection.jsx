@@ -1,64 +1,106 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { listCategoriasApi } from "../../api/categorias.api";
-import UbicacionSection from "../../components/common/UbicacionSection";
 import { useAuth } from "../../contexts/AuthContext";
-import { http } from "../../api/http";
 
-export default function Activos() {
+import {
+  listarUbicacionesApi,
+  crearUbicacionApi,
+  actualizarUbicacionApi,
+  cambiarEstadoUbicacionApi,
+} from "../../api/ubicacion.api";
+
+import EditIcon from "../../assets/edit.svg?react";
+
+function cleanStr(v) {
+  const s = (v ?? "").toString().trim();
+  return s.length ? s : "";
+}
+
+export default function UbicacionSection() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-
   const { user } = useAuth();
   const isAdmin = Number(user?.id_rol) === 1;
 
+  const [ubicaciones, setUbicaciones] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorKey, setErrorKey] = useState("");
+
   const [openCreate, setOpenCreate] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
   const [confirmCreate, setConfirmCreate] = useState(false);
+
+  const [openEdit, setOpenEdit] = useState(false);
   const [openConfirmDeactivate, setOpenConfirmDeactivate] = useState(false);
 
+  const [saving, setSaving] = useState(false);
+  const [formErrorKey, setFormErrorKey] = useState("");
+
   const [form, setForm] = useState({
-    id_categoria: "",
+    id_ubicacion: "",
     nombre: "",
     descripcion: "",
     estado: 1,
   });
 
-  const [saving, setSaving] = useState(false);
-  const [formErrorKey, setFormErrorKey] = useState("");
+  async function reload() {
+    const resp = await listarUbicacionesApi();
+    if (resp?.ok) {
+      setUbicaciones(resp.data || []);
+      setErrorKey("");
+    } else {
+      setUbicaciones([]);
+      setErrorKey(resp?.error || "errors.locations.fetchFailed");
+    }
+  }
 
-  const [categorias, setCategorias] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorKey, setErrorKey] = useState("");
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setErrorKey("");
+
+        const resp = await listarUbicacionesApi();
+        if (!alive) return;
+
+        if (resp?.ok) setUbicaciones(resp.data || []);
+        else {
+          setUbicaciones([]);
+          setErrorKey(resp?.error || "errors.locations.fetchFailed");
+        }
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   function openCreateModal() {
     setFormErrorKey("");
-    setForm({ id_categoria: "", nombre: "", descripcion: "", estado: 1 });
+    setConfirmCreate(false);
+    setForm({ id_ubicacion: "", nombre: "", descripcion: "", estado: 1 });
     setOpenCreate(true);
   }
 
-  function openEditModal(c) {
+  function openEditModal(u) {
     setFormErrorKey("");
     setForm({
-      id_categoria: c.id_categoria,
-      nombre: c.nombre || "",
-      descripcion: c.descripcion || "",
-      estado: c.estado ?? 1,
+      id_ubicacion: u.id_ubicacion,
+      nombre: u.nombre || "",
+      descripcion: u.descripcion || "",
+      estado: u.estado ?? 1,
     });
     setOpenEdit(true);
-  }
-
-  async function reloadCategorias() {
-    const resp = await listCategoriasApi();
-    if (resp?.ok) setCategorias(resp.data || []);
   }
 
   async function handleCreate() {
     if (!isAdmin) return;
 
-    const nombre = (form.nombre || "").trim();
-    const descripcion = (form.descripcion || "").trim();
+    const nombre = cleanStr(form.nombre);
+    const descripcion = cleanStr(form.descripcion);
 
     if (!nombre) {
       setFormErrorKey("errors.validation.requiredFields");
@@ -69,23 +111,19 @@ export default function Activos() {
       setSaving(true);
       setFormErrorKey("");
 
-      const resp = await http.post("/api/categorias", {
+      const resp = await crearUbicacionApi({
         nombre,
         descripcion: descripcion ? descripcion : null,
       });
 
-      if (!resp?.data?.ok) {
-        setFormErrorKey(resp?.data?.error || "errors.categories.createFailed");
+      if (!resp?.ok) {
+        setFormErrorKey(resp?.error || "errors.locations.createFailed");
         return;
       }
 
-      setConfirmCreate(false);
       setOpenCreate(false);
-      await reloadCategorias();
-    } catch (e) {
-      setFormErrorKey(
-        e?.response?.data?.error || "errors.categories.createFailed",
-      );
+      setConfirmCreate(false);
+      await reload();
     } finally {
       setSaving(false);
     }
@@ -94,36 +132,31 @@ export default function Activos() {
   async function handleSaveEdit() {
     if (!isAdmin) return;
 
-    const id = Number(form.id_categoria);
-    const nombre = (form.nombre || "").trim();
-    const descripcion = (form.descripcion || "").trim();
+    const id = Number(form.id_ubicacion);
+    const nombre = cleanStr(form.nombre);
+    const descripcion = cleanStr(form.descripcion);
 
     if (!id || !nombre) {
       setFormErrorKey("errors.validation.requiredFields");
       return;
     }
 
-    if (
-      !window.confirm(`¿Confirmas guardar los cambios de la categoría #${id}?`)
-    )
-      return;
-
     try {
       setSaving(true);
       setFormErrorKey("");
 
-      const resp = await http.put(`/api/categorias/${id}`, {
+      const resp = await actualizarUbicacionApi(id, {
         nombre,
-        descripcion: descripcion || null,
+        descripcion: descripcion ? descripcion : null,
       });
 
-      if (!resp?.data?.ok) {
-        setFormErrorKey(resp?.data?.error);
+      if (!resp?.ok) {
+        setFormErrorKey(resp?.error || "errors.locations.updateFailed");
         return;
       }
 
       setOpenEdit(false);
-      await reloadCategorias();
+      await reload();
     } finally {
       setSaving(false);
     }
@@ -132,64 +165,32 @@ export default function Activos() {
   async function handleDeactivate() {
     if (!isAdmin) return;
 
-    const id = Number(form.id_categoria);
+    const id = Number(form.id_ubicacion);
     if (!id) return;
 
     try {
       setSaving(true);
       setFormErrorKey("");
 
-      const resp = await http.patch(`/api/categorias/${id}/estado`, {
-        nuevoEstado: 0,
-      });
+      const resp = await cambiarEstadoUbicacionApi(id, 0);
 
-      if (!resp?.data?.ok) {
-        setFormErrorKey(resp?.data?.error);
+      if (!resp?.ok) {
+        setFormErrorKey(resp?.error || "errors.locations.stateUpdateFailed");
         return;
       }
 
       setOpenConfirmDeactivate(false);
       setOpenEdit(false);
-      await reloadCategorias();
+      await reload();
     } finally {
       setSaving(false);
     }
   }
 
-  useEffect(() => {
-    let alive = true;
-
-    async function loadCategorias() {
-      try {
-        setLoading(true);
-        setErrorKey("");
-
-        const resp = await listCategoriasApi();
-        if (!alive) return;
-
-        if (!resp?.ok) {
-          setCategorias([]);
-          setErrorKey(resp?.error);
-          return;
-        }
-
-        setCategorias(resp.data || []);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    }
-
-    loadCategorias();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
   return (
-    <div className="panel">
-      <h1>{t("assets.title")}</h1>
-      <div className="assets-cats-header">
-        <h3>{t("assets.categories")}</h3>
+    <>
+      <div className="assets-cats-header" style={{ marginTop: 26 }}>
+        <h3>{t("assets.location.title", "Ubicaciones")}</h3>
 
         {isAdmin && (
           <button
@@ -198,7 +199,7 @@ export default function Activos() {
             onClick={openCreateModal}
             disabled={loading}
           >
-            {t("assets.actions.createCategory", "Crear categoría")}
+            {t("assets.location.actions.create", "Crear ubicación")}
           </button>
         )}
       </div>
@@ -208,74 +209,53 @@ export default function Activos() {
       {!loading && errorKey && (
         <p>
           {t(
-            "assets.categoriesFailed",
-            "No se pudieron cargar las categorías.",
+            "assets.location.loadFailed",
+            "No se pudieron cargar las ubicaciones.",
           )}
         </p>
       )}
 
-      {!loading && !errorKey && categorias.length === 0 && (
-        <p>{t("assets.categoriesEmpty", "Sin categorías disponibles.")}</p>
+      {!loading && !errorKey && ubicaciones.length === 0 && (
+        <p>{t("assets.location.empty", "Sin ubicaciones disponibles.")}</p>
       )}
 
-      {!loading && !errorKey && categorias.length > 0 && (
-        <section className="cat-grid">
-          {categorias.map((c) => {
-            const creador = `${c.nombre_creador || ""} ${
-              c.apellido_creador || ""
-            }`.trim();
+      {!loading && !errorKey && ubicaciones.length > 0 && (
+        <section className="loc-list">
+          {ubicaciones.map((loc) => (
+            <article key={loc.id_ubicacion} className="loc-row">
 
-            return (
-              <article key={c.id_categoria} className="cat-card">
-                <div className="cat-accent" />
+              <div className="loc-left">
+                <span className="loc-icon">📍</span>
 
-                <div className="cat-body">
-                  <div className="cat-info">
-                    <div className="cat-name">{c.nombre}</div>
-
-                    <div className="cat-meta">
-                      <div className="cat-meta-line">
-                        <strong>{c.recursos_count ?? 0}</strong>{" "}
-                        {t("assets.resources.title", "recursos")}
-                      </div>
-
-                      <div className="cat-meta-line">
-                        {t("assets.createdBy", "Creado por")}{" "}
-                        <strong>{creador || "-"}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="cat-btn"
-                    onClick={() =>
-                      navigate(`/activos/categoria/${c.id_categoria}`)
-                    }
-                  >
-                    {t("resources.actions.viewResources", "Ver más")}
-                  </button>
-
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      className="cat-btn cat-btn--secondary"
-                      onClick={() => openEditModal(c)}
-                    >
-                      {t("common.edit", "Modificar")}
-                    </button>
+                <div className="loc-text">
+                  <div className="loc-name">{loc.nombre}</div>
+                  {loc.descripcion && (
+                    <div className="loc-desc">{loc.descripcion}</div>
                   )}
                 </div>
-              </article>
-            );
-          })}
+              </div>
+
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="res-card-edit"
+                  onClick={() => openEditModal(loc)}
+                  title={t("assets.location.actions.edit", "Modificar")}
+                  aria-label={t("assets.location.actions.edit", "Modificar")}
+                >
+                  <EditIcon className="res-card-edit-icon" />
+                </button>
+              )}
+            </article>
+          ))}
         </section>
       )}
-      {/* MODAL CREAR CATEGORÍA */}
+
+      {/* MODAL CREAR */}
       {openCreate && (
         <div
           className="modal-backdrop"
-          onMouseDown={() => setOpenCreate(false)}
+          onMouseDown={() => !saving && setOpenCreate(false)}
           role="presentation"
         >
           <div
@@ -286,20 +266,16 @@ export default function Activos() {
           >
             <h3>
               {confirmCreate
-                ? t(
-                    "assets.actions.confirmCreateCategory",
-                    "Confirmar categoría",
-                  )
-                : t("assets.actions.createCategory", "Crear categoría")}
+                ? t("assets.location.modal.review", "Confirmar ubicación")
+                : t("assets.location.modal.create", "Crear ubicación")}
             </h3>
 
             {formErrorKey && <p className="error">{t(formErrorKey)}</p>}
 
-            {/* PASO 1: EDITAR */}
             {!confirmCreate && (
               <>
                 <div className="field">
-                  <label>{t("assets.fields.name", "Nombre")}</label>
+                  <label>{t("assets.location.fields.name", "Nombre")}</label>
                   <input
                     className="input"
                     value={form.nombre}
@@ -312,7 +288,9 @@ export default function Activos() {
                 </div>
 
                 <div className="field" style={{ marginTop: 12 }}>
-                  <label>{t("assets.fields.description", "Descripción")}</label>
+                  <label>
+                    {t("assets.location.fields.description", "Descripción")}
+                  </label>
                   <textarea
                     className="modal-category-textarea"
                     rows={4}
@@ -345,32 +323,32 @@ export default function Activos() {
               </>
             )}
 
-            {/* PASO 2: REVISAR / CONFIRMAR (SIN INPUTS) */}
             {confirmCreate && (
               <div className="modal-confirm-section" style={{ marginTop: 12 }}>
                 <p className="modal-hint">
                   {t(
-                    "assets.categories.reviewBeforeCreate",
-                    "Revisa los datos antes de crear la categoría:",
+                    "assets.location.modal.reviewHint",
+                    "Revisa los datos antes de crear la ubicación:",
                   )}
                 </p>
 
                 <div className="modal-review">
                   <div className="modal-review-row">
                     <span className="modal-review-label">
-                      {t("assets.fields.name", "Nombre")}:{" "}
+                      {t("assets.location.fields.name", "Nombre")}:{" "}
                     </span>
                     <span className="modal-review-value">
-                      {form.nombre?.trim() || "--"}
+                      {cleanStr(form.nombre) || "--"}
                     </span>
                   </div>
 
                   <div className="modal-review-row" style={{ marginTop: 8 }}>
                     <span className="modal-review-label">
-                      {t("assets.fields.description", "Descripción")}:{" "}
+                      {t("assets.location.fields.description", "Descripción")}
+                      :{" "}
                     </span>
                     <span className="modal-review-value">
-                      {form.descripcion?.trim() || "--"}
+                      {cleanStr(form.descripcion) || "--"}
                     </span>
                   </div>
                 </div>
@@ -401,11 +379,12 @@ export default function Activos() {
           </div>
         </div>
       )}
-      {/* MODAL MODIFICAR CATEGORÍA */}
+
+      {/* MODAL EDITAR */}
       {openEdit && (
         <div
           className="modal-backdrop"
-          onMouseDown={() => setOpenEdit(false)}
+          onMouseDown={() => !saving && setOpenEdit(false)}
           role="presentation"
         >
           <div
@@ -414,10 +393,7 @@ export default function Activos() {
             role="dialog"
             aria-modal="true"
           >
-            <h3>
-              {t("common.edit", "Modificar")}{" "}
-              {t("assets.categories", "Categoría")}
-            </h3>
+            <h3>{t("assets.location.modal.edit", "Modificar ubicación")}</h3>
 
             {formErrorKey && <p className="error">{t(formErrorKey)}</p>}
 
@@ -425,13 +401,13 @@ export default function Activos() {
               <label>ID</label>
               <input
                 className="input-muted"
-                value={form.id_categoria}
+                value={String(form.id_ubicacion)}
                 disabled
               />
             </div>
 
             <div className="field" style={{ marginTop: 12 }}>
-              <label>{t("assets.fields.name", "Nombre")}</label>
+              <label>{t("assets.location.fields.name", "Nombre")}</label>
               <input
                 className="input"
                 value={form.nombre}
@@ -443,7 +419,9 @@ export default function Activos() {
             </div>
 
             <div className="field" style={{ marginTop: 12 }}>
-              <label>{t("assets.fields.description", "Descripción")}</label>
+              <label>
+                {t("assets.location.fields.description", "Descripción")}
+              </label>
               <textarea
                 className="modal-category-textarea"
                 rows={4}
@@ -464,13 +442,14 @@ export default function Activos() {
               >
                 {t("common.cancel", "Cancelar")}
               </button>
+
               <button
                 className="btn-modal-primary"
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={saving}
               >
-                {t("common.save", "Guardar cambios")}
+                {t("assets.location.actions.save", "Guardar cambios")}
               </button>
             </div>
 
@@ -483,22 +462,24 @@ export default function Activos() {
             >
               <p className="modal-form-hint">
                 {t(
-                  "assets.deactivateHint",
-                  "Al desactivar la categoría, dejará de estar disponible para nuevos recursos. Esta acción se puede revertir.",
+                  "assets.location.deactivateHint",
+                  "Al desactivar la ubicación, dejará de estar disponible.",
                 )}
               </p>
+
               <button
                 type="button"
                 className="btn-deactivate"
                 onClick={() => setOpenConfirmDeactivate(true)}
                 disabled={saving}
               >
-                {t("common.deactivate", "Desactivar")}
+                {t("assets.location.actions.deactivate", "Desactivar")}
               </button>
             </div>
           </div>
         </div>
       )}
+
       {/* MODAL CONFIRMAR DESACTIVACIÓN */}
       {openConfirmDeactivate && (
         <div
@@ -512,24 +493,27 @@ export default function Activos() {
             role="dialog"
             aria-modal="true"
             aria-label={t(
-              "assets.confirmDeactivateTitle",
+              "assets.location.confirmDeactivate.title",
               "Confirmar desactivación",
             )}
           >
             <h3>
-              {t("assets.confirmDeactivateTitle", "Confirmar desactivación")}
+              {t(
+                "assets.location.confirmDeactivate.title",
+                "Confirmar desactivación",
+              )}
             </h3>
 
             <p style={{ marginTop: 8 }}>
               {t(
-                "assets.confirmDeactivateMsg",
-                "¿Estás seguro/a que deseas desactivar esta categoría?",
+                "assets.location.confirmDeactivate.message",
+                "¿Estás seguro/a que deseas desactivar esta ubicación?",
               )}
             </p>
 
             <div style={{ marginTop: 10, opacity: 0.9 }}>
               <strong>
-                #{form.id_categoria} —{" "}
+                #{form.id_ubicacion} —{" "}
                 {form.nombre || t("common.unnamed", "Sin nombre")}
               </strong>
             </div>
@@ -551,14 +535,12 @@ export default function Activos() {
                 disabled={saving}
                 autoFocus
               >
-                {t("common.deactivate", "Desactivar")}
+                {t("assets.location.actions.deactivate", "Desactivar")}
               </button>
             </div>
           </div>
         </div>
       )}
-      <UbicacionSection />
-
-    </div>
+    </>
   );
 }

@@ -57,6 +57,7 @@ export default function Recursos() {
   const [openAssignRut, setOpenAssignRut] = useState(false);
   const [openConfirmLoan, setOpenConfirmLoan] = useState(false);
   const [openReturn, setOpenReturn] = useState(false);
+  const [openConfirmDeactivate, setOpenConfirmDeactivate] = useState(false);
 
   // modal reutilizable externo
   const [openCreateExternal, setOpenCreateExternal] = useState(false);
@@ -247,11 +248,6 @@ export default function Recursos() {
   }
   async function handleDeactivateResource() {
     if (!selected) return;
-
-    if (
-      !window.confirm(`¿Confirmas desactivar el recurso "${selected.nombre}"?`)
-    )
-      return;
 
     try {
       setSavingResource(true);
@@ -834,10 +830,7 @@ export default function Recursos() {
                 <div className="field full">
                   <div className="res-mini animated-fade-in">
                     <div className="res-mini-title">
-                      {t(
-                        "assets.assignFlow.userFound",
-                        "Usuario Verificado",
-                      )}
+                      {t("assets.assignFlow.userFound", "Usuario Verificado")}
                     </div>
                     <div className="res-mini-line">
                       <strong>{fullName(externalUser)}</strong>
@@ -854,6 +847,14 @@ export default function Recursos() {
             </div>
 
             <div className="modal-actions">
+              <button
+                className="btn-modal-cancel"
+                type="button"
+                onClick={() => setOpenAssignRut(false)}
+                disabled={lookupLoading}
+              >
+                {t("common.cancel", "Cancelar")}
+              </button>
               {externalUser ? (
                 <button
                   className="btn-modal-logout"
@@ -889,15 +890,6 @@ export default function Recursos() {
                   </button>
                 </>
               )}
-
-              <button
-                className="btn-modal-cancel"
-                type="button"
-                onClick={() => setOpenAssignRut(false)}
-                disabled={lookupLoading}
-              >
-                {t("common.cancel", "Cancelar")}
-              </button>
             </div>
           </div>
         </div>
@@ -969,20 +961,20 @@ export default function Recursos() {
 
             <div className="modal-actions">
               <button
-                className="btn-modal-logout"
-                type="button"
-                onClick={confirmLoan}
-                disabled={loading}
-              >
-                {t("assets.confirmLoan.assign")}
-              </button>
-              <button
                 className="btn-modal-cancel"
                 type="button"
                 onClick={() => setOpenConfirmLoan(false)}
                 disabled={loading}
               >
                 {t("common.cancel")}
+              </button>
+              <button
+                className="btn-modal-logout"
+                type="button"
+                onClick={confirmLoan}
+                disabled={loading}
+              >
+                {t("assets.confirmLoan.assign")}
               </button>
             </div>
           </div>
@@ -1007,9 +999,7 @@ export default function Recursos() {
 
             <div className="res-modal-info">
               <div className="res-info-row">
-                <span className="res-info-k">
-                  {t("assets.details.loanId")}
-                </span>
+                <span className="res-info-k">{t("assets.details.loanId")}</span>
                 <span className="res-info-v">
                   {safe(selected.id_prestamo_activo)}
                 </span>
@@ -1021,9 +1011,7 @@ export default function Recursos() {
                 <span className="res-info-v">{safe(selected.nombre)}</span>
               </div>
               <div className="res-info-row">
-                <span className="res-info-k">
-                  {t("assets.details.loanTo")}
-                </span>
+                <span className="res-info-k">{t("assets.details.loanTo")}</span>
                 <span className="res-info-v">{safe(selected.prestado_a)}</span>
               </div>
               <div className="res-info-row">
@@ -1057,20 +1045,20 @@ export default function Recursos() {
 
             <div className="modal-actions">
               <button
-                className="btn-modal-logout"
-                type="button"
-                onClick={confirmReturn}
-                disabled={loading}
-              >
-                {t("assets.actions.return")}
-              </button>
-              <button
                 className="btn-modal-cancel"
                 type="button"
                 onClick={() => setOpenReturn(false)}
                 disabled={loading}
               >
                 {t("common.cancel")}
+              </button>
+              <button
+                className="btn-modal-logout"
+                type="button"
+                onClick={confirmReturn}
+                disabled={loading}
+              >
+                {t("assets.actions.return")}
               </button>
             </div>
           </div>
@@ -1214,21 +1202,20 @@ export default function Recursos() {
 
             <div className="modal-actions" style={{ marginTop: 16 }}>
               <button
-                className="btn-modal-primary"
-                type="button"
-                onClick={() => setConfirmCreateResource(true)}
-                disabled={savingResource}
-              >
-                {t("common.continue", "Continuar")}
-              </button>
-
-              <button
                 className="btn-modal-cancel"
                 type="button"
                 onClick={() => setOpenCreateResource(false)}
                 disabled={savingResource}
               >
                 {t("common.cancel", "Cancelar")}
+              </button>
+              <button
+                className="btn-modal-primary"
+                type="button"
+                onClick={() => setConfirmCreateResource(true)}
+                disabled={savingResource}
+              >
+                {t("common.continue", "Continuar")}
               </button>
             </div>
 
@@ -1249,15 +1236,11 @@ export default function Recursos() {
                     {resourceForm.nombre || "--"}
                   </div>
                   <div>
-                    <strong>
-                      {t("assets.fields.quantity", "Cantidad")}:
-                    </strong>{" "}
+                    <strong>{t("assets.fields.quantity", "Cantidad")}:</strong>{" "}
                     {resourceForm.cantidad || 1}
                   </div>
                   <div>
-                    <strong>
-                      {t("assets.fields.location", "Ubicación")}:
-                    </strong>{" "}
+                    <strong>{t("assets.fields.location", "Ubicación")}:</strong>{" "}
                     {ubicacion.find(
                       (u) =>
                         String(u.id_ubicacion) ===
@@ -1270,10 +1253,7 @@ export default function Recursos() {
                     </strong>{" "}
                     {resourceForm.usarDescripcionGlobal
                       ? resourceForm.descripcion?.trim() || "--"
-                      : t(
-                          "assets.field.descLaterShort",
-                          "Se agregará después",
-                        )}
+                      : t("assets.field.descLaterShort", "Se agregará después")}
                   </div>
                 </div>
 
@@ -1281,6 +1261,14 @@ export default function Recursos() {
                   className="modal-confirm-actions"
                   style={{ marginTop: 10 }}
                 >
+                  <button
+                    className="btn-modal-cancel"
+                    type="button"
+                    onClick={() => setConfirmCreateResource(false)}
+                    disabled={savingResource}
+                  >
+                    {t("common.cancel", "Cancelar")}
+                  </button>
                   <button
                     className="btn-modal-primary"
                     type="button"
@@ -1290,15 +1278,6 @@ export default function Recursos() {
                     {savingResource
                       ? t("common.saving", "Guardando...")
                       : t("common.confirm", "Confirmar")}
-                  </button>
-
-                  <button
-                    className="btn-modal-cancel"
-                    type="button"
-                    onClick={() => setConfirmCreateResource(false)}
-                    disabled={savingResource}
-                  >
-                    {t("common.cancel", "Cancelar")}
                   </button>
                 </div>
               </div>
@@ -1374,21 +1353,20 @@ export default function Recursos() {
 
             <div className="modal-actions" style={{ marginTop: 16 }}>
               <button
-                className="btn-modal-primary"
-                type="button"
-                onClick={handleSaveEditResource}
-                disabled={savingResource || isOccupied(selected)}
-              >
-                {t("common.save", "Guardar cambios")}
-              </button>
-
-              <button
                 className="btn-modal-cancel"
                 type="button"
                 onClick={() => setOpenEditResource(false)}
                 disabled={savingResource}
               >
                 {t("common.cancel", "Cancelar")}
+              </button>
+              <button
+                className="btn-modal-primary"
+                type="button"
+                onClick={handleSaveEditResource}
+                disabled={savingResource || isOccupied(selected)}
+              >
+                {t("common.save", "Guardar cambios")}
               </button>
             </div>
 
@@ -1409,10 +1387,74 @@ export default function Recursos() {
               <button
                 type="button"
                 className="btn-deactivate"
-                onClick={handleDeactivateResource}
+                onClick={() => setOpenConfirmDeactivate(true)}
                 disabled={savingResource || isOccupied(selected)}
               >
                 {t("common.deactivate", "Desactivar")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {openConfirmDeactivate && selected && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={() => setOpenConfirmDeactivate(false)}
+          role="presentation"
+        >
+          <div
+            className="modal"
+            onMouseDown={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <h3>
+              {t("assets.confirmDeactivate.title", "¿Desactivar recurso?")}
+            </h3>
+
+            <p className="modal-hint">
+              {t(
+                "assets.confirmDeactivate.text",
+                "¿Estás seguro/a que deseas desactivar este recurso?",
+              )}
+            </p>
+
+            <div className="modal-review">
+              <div className="modal-review-row">
+                <span className="modal-review-label">
+                  {t("audits.cols.resource", "Recurso")}:
+                </span>
+                <span className="modal-review-value">{selected.nombre}</span>
+              </div>
+
+              <div className="modal-review-row">
+                <span className="modal-review-label">ID:</span>
+                <span className="modal-review-value">
+                  {selected.id_recurso}
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-confirm-actions" style={{ marginTop: 16 }}>
+              <button
+                className="btn-modal-cancel"
+                type="button"
+                onClick={() => setOpenConfirmDeactivate(false)}
+                disabled={savingResource}
+              >
+                {t("common.cancel", "Cancelar")}
+              </button>
+
+              <button
+                className="btn-danger"
+                type="button"
+                onClick={async () => {
+                  setOpenConfirmDeactivate(false);
+                  await handleDeactivateResource();
+                }}
+                disabled={savingResource}
+              >
+                {t("common.confirm", "Confirmar desactivación")}
               </button>
             </div>
           </div>

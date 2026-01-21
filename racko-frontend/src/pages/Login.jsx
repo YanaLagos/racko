@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import LanguageSwitch from "../components/common/LanguageSwitch";
 import { useNavigate } from "react-router-dom";
 
+import RackoLogo from "../assets/logo-racko.svg?react";
+
 export default function Login() {
   const { t } = useTranslation();
   const { login } = useAuth();
@@ -38,7 +40,9 @@ export default function Login() {
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <LanguageSwitch />
       </div>
-
+      <div className="racko-logo">
+        <RackoLogo className="racko-logo-svg" />
+      </div>
       <div className="inicio">
         <h1>{t("login.title")}</h1>
         <h2>{t("login.subtitle")}</h2>

@@ -6,6 +6,24 @@
   display: grid;
   place-items: center;
   padding: 24px;
+  position: relative;
+}
+
+.racko-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 8px;
+}
+
+.racko-logo-svg {
+  max-width: 500px;
+  height: auto;
+  color: #ffffff;
+}
+
+.racko-logo-svg path {
+  fill: currentColor;
 }
 
 .inicio {
@@ -58,7 +76,7 @@
 }
 
 .btn-login:hover {
-  transform: translateY(-2px);
+  transform: scale(0.97);
   background: var(--color-btn-hover);
 }
 
@@ -76,32 +94,46 @@
 }
 
 .link-login:hover {
-  transform: translateY(-2px);
+  transform: scale(0.97);
 }
 
 /*LANGUAGE SWITCH*/
 .lang-btn{
   display:flex; 
   align-items:center; 
+  flex-direction: row-reverse;
   gap:8px;
-  border:1px solid #e5e7eb; 
-  background:#fff;
+  border:none; 
+  background: transparent;
   padding:6px 10px; 
   border-radius:999px; 
   cursor:pointer;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  
 }
 
-.flag{
-  width:22px; 
-  height:22px; 
+.lang-es-svg{
+  width:30px; 
+  height:35px; 
   display:grid; 
   place-items:center;
   border-radius:999px; 
   overflow:hidden; 
   font-size:16px;
+  margin-left: auto;
 }
 
-.lang-text{ font-size:14px; }
+.lang-es-svg:hover {
+  transform: scale(1.1);
+}
+
+.lang-text{ 
+  font-size:14px; 
+  color: var(--text-main);
+  font-weight: 500;
+}
 
 /*ACTIVOS*/
 
@@ -286,6 +318,105 @@
   gap: 25px;
   margin-top: 8px;
 }
+
+/* contenedor de lista */
+.loc-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:16px;
+}
+
+/* fila */
+.loc-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  padding:12px 14px;
+  border-radius:14px;
+
+  background:#fff;
+  border:1px solid rgba(181,101,251,0.18);
+  box-shadow:0 10px 18px rgba(0,0,0,0.08);
+
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.loc-row:hover{
+  transform: translateY(-1px);
+  box-shadow:0 14px 26px rgba(0,0,0,0.10);
+  border-color: rgba(181,101,251,0.30);
+}
+
+.loc-left{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-width:0;
+  flex:1;
+}
+
+/* iconito fijo */
+.loc-icon{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color: var(--color-primary);
+  background: rgba(181,101,251,0.10);
+  border:1px solid rgba(181,101,251,0.16);
+  flex:0 0 auto;
+}
+
+.loc-text{
+  min-width:0;
+  flex:1;
+}
+
+.loc-name{
+  font-weight:700;
+  color: var(--text-main);
+  line-height:1.2;
+}
+
+.loc-desc{
+  margin-top:2px;
+  font-size:0.9rem;
+  color: var(--text-muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* icon button editar */
+.loc-iconbtn{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+
+  border:1px solid rgba(181,101,251,0.22);
+  background: transparent;
+  color: var(--color-primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.loc-iconbtn:hover{
+  background: rgba(181,101,251,0.10);
+  border-color: rgba(181,101,251,0.35);
+  transform: scale(0.98);
+}
+
 
 /*AUDITORIAS*/
 
@@ -982,7 +1113,8 @@ body.resizing {
 }
 
 .res-panel{
-  max-width: 1120px;
+  width: 100%;
+  max-width: 1400px; 
   margin: 0 auto;
   padding: 0 16px;
 }
@@ -1065,11 +1197,14 @@ body.resizing {
   align-items: center;
   justify-content: center;
   border: none;
+  border-radius: 999px;
   color: var(bg-main);
+  background: var(#eee);
+  cursor: pointer;
 }
 
 .res-card-edit:hover{
-  transform: translateY(-1px);
+  transform: scale(1.1);
 }
 
 .res-card-edit-icon{

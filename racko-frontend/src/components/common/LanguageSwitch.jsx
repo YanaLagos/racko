@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import EsFlag from "../../assets/chile-flag.svg?react";
 
 export default function LanguageSwitch() {
   const { i18n } = useTranslation();
@@ -10,7 +11,7 @@ export default function LanguageSwitch() {
 
   return (
     <button type="button" className="lang-btn" onClick={toggle} aria-label="Cambiar idioma">
-      <span className="flag">{isEs ? "🇨🇱" : "🇬🇧"}</span>
+      <EsFlag className="lang-es-svg" />
       <span className="lang-text">{isEs ? "Español" : "English"}</span>
     </button>
   );

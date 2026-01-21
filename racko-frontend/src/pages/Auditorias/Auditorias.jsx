@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   listarAuditoriasPrestamosApi,
@@ -35,6 +36,7 @@ const MODOS = [
   { value: "en_curso", key: "audits.filters.mode.inProgress" },
   { value: "todos", key: "audits.filters.mode.all" },
   { value: "proximos_venc", key: "audits.filters.mode.upcomingDue" },
+  { value: "atrasados", key: "audits.filters.mode.overdue" },
   { value: "frecuencia", key: "audits.filters.mode.frequency" },
 ];
 
@@ -42,6 +44,10 @@ const PAGE_SIZE = 30;
 
 export default function Auditorias() {
   const { t } = useTranslation();
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const appliedModoFromUrl = useRef(false);
 
   const [usuario, setUsuario] = useState("");
   const [rut, setRut] = useState("");
@@ -147,8 +153,34 @@ export default function Auditorias() {
 
   useEffect(() => {
     consultar(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (appliedModoFromUrl.current) return;
+
+    const qs = new URLSearchParams(location.search);
+    const modoUrl = (qs.get("modo") || "").toLowerCase();
+
+    const allowed = [
+      "en_curso",
+      "todos",
+      "proximos_venc",
+      "atrasados",
+      "frecuencia",
+    ];
+
+    if (allowed.includes(modoUrl) && modoUrl !== modo) {
+      appliedModoFromUrl.current = true;
+      setModo(modoUrl);
+      setPage(1);
+      consultar(1);
+
+      navigate("/auditorias", { replace: true });
+      return;
+    }
+
+    appliedModoFromUrl.current = true;
+  }, [location.search]);
 
   function toggleSort(key) {
     if (modo === "frecuencia") return;
@@ -190,7 +222,7 @@ export default function Auditorias() {
 
       const resp = await actualizarObservacionesPrestamoApi(
         obsRow.id_prestamo,
-        payload
+        payload,
       );
 
       if (!resp?.ok) {
@@ -202,14 +234,14 @@ export default function Auditorias() {
         prev.map((x) =>
           x.id_prestamo === obsRow.id_prestamo
             ? { ...x, observaciones: payload }
-            : x
-        )
+            : x,
+        ),
       );
 
       closeObsModal();
     } catch (e) {
       setObsErrorKey(
-        e?.response?.data?.error || "errors.audit.updateObsFailed"
+        e?.response?.data?.error || "errors.audit.updateObsFailed",
       );
     } finally {
       setObsSaving(false);
@@ -275,7 +307,16 @@ export default function Auditorias() {
 
             <div className="audit-field">
               <label>{t("audits.filters.modeLabel")}</label>
-              <select value={modo} onChange={(e) => setModo(e.target.value)}>
+
+              <select
+                value={modo}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setModo(next);
+                  setPage(1);
+                  consultar(1);
+                }}
+              >
                 {MODOS.map((m) => (
                   <option key={m.value} value={m.value}>
                     {t(m.key)}
@@ -362,7 +403,7 @@ export default function Auditorias() {
                 style={{ width: modo === "frecuencia" ? "100px" : "100px" }}
                 onClick={() =>
                   toggleSort(
-                    modo === "frecuencia" ? "frecuencia" : "id_prestamo"
+                    modo === "frecuencia" ? "frecuencia" : "id_prestamo",
                   )
                 }
               >

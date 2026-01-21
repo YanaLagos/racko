@@ -59,7 +59,15 @@ function buildWhere({ usuario, rut, recurso, dia, desde, hasta, modo }) {
     } else if (m === "proximos_venc") {
       where.push("p.fecha_devolucion IS NULL");
       where.push("p.fecha_vencimiento IS NOT NULL");
-      where.push("DATE(p.fecha_vencimiento) >= CURDATE()");
+      where.push(
+        "DATE(p.fecha_vencimiento) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)",
+      );
+    } else if (m === "atrasados") {
+      where.push("p.fecha_devolucion IS NULL");
+      where.push("p.fecha_vencimiento IS NOT NULL");
+      where.push(
+        "DATE(p.fecha_vencimiento) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)",
+      );
     }
   }
 

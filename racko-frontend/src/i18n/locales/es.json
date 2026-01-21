@@ -190,7 +190,7 @@
       "observationsLabel": "Observaciones",
       "observationsPh": "Puedes editar o agregar nuevas observaciones"
     },
-    
+
     "fields": {
       "prefix": "Nombre / Prefijo",
       "prefixHint": "Si creas varios, se numerarán como 'Guitarra01, Guitarra02...'",
@@ -203,6 +203,36 @@
       "confirm": "Confirma los datos antes de guardar",
       "descLaterShort": "Se agregará después",
       "name": "Nombre"
+    },
+
+    "location": {
+      "title": "Ubicaciones",
+      "empty": "Sin ubicaciones disponibles.",
+      "loadFailed": "No se pudieron cargar las ubicaciones.",
+      "actions": {
+        "create": "Crear ubicación",
+        "edit": "Modificar",
+        "save": "Guardar cambios",
+        "deactivate": "Desactivar"
+      },
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción"
+      },
+      "card": {
+        "noDescription": "Sin descripción"
+      },
+      "modal": {
+        "create": "Crear ubicación",
+        "edit": "Modificar ubicación",
+        "review": "Confirmar ubicación",
+        "reviewHint": "Revisa los datos antes de crear la ubicación:"
+      },
+      "confirmDeactivate": {
+        "title": "Confirmar desactivación",
+        "message": "¿Estás seguro/a que deseas desactivar esta ubicación?"
+      },
+      "deactivateHint": "Al desactivar la ubicación, dejará de estar disponible."
     }
   },
 
@@ -261,6 +291,7 @@
         "inProgress": "Préstamos en curso",
         "all": "Todos los préstamos",
         "upcomingDue": "Próximos vencimientos",
+        "overdue": "Atrasados",
         "frequency": "Frecuencia de préstamo"
       }
     },
@@ -358,7 +389,7 @@
       "inviteOk": "Invitación enviada.",
       "deactivate": "Desactivar",
       "activate": "Activar",
-      "deactivateConfirm": "¿Seguro que deseas desactivar este usuario?"
+      "deactivateConfirm": "¿Estás seguro/a que deseas activar este usuario?"
     },
     "empty": {
       "internalUsers": "No se encontraron usuarios internos."

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { upcomingDueApi } from "../../api/prestamos.api";
+import { useLocation } from "react-router-dom";
 
 function formatFecha(fechaISO) {
   const d = new Date(fechaISO);
@@ -32,6 +33,7 @@ function getWhenLabel(fechaISO, t) {
 export default function UpcomingDue() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [items, setItems] = useState([]);
   const [index, setIndex] = useState(0);
@@ -49,7 +51,8 @@ export default function UpcomingDue() {
 
         let list = [];
         if (Array.isArray(payload)) list = payload;
-        else if (payload?.ok && Array.isArray(payload?.data)) list = payload.data;
+        else if (payload?.ok && Array.isArray(payload?.data))
+          list = payload.data;
         else if (Array.isArray(payload?.data)) list = payload.data;
 
         if (!alive) return;
@@ -114,7 +117,9 @@ export default function UpcomingDue() {
       <div className="widget-icon"></div>
 
       <div className="widget-content">
-        <div className="widget-title">{t("dashboard.widget.upcomingDueAria")}</div>
+        <div className="widget-title">
+          {t("dashboard.widget.upcomingDueAria")}
+        </div>
         <div className="widget-subtitle">{subtitleText}</div>
       </div>
 
@@ -122,7 +127,7 @@ export default function UpcomingDue() {
         <button
           type="button"
           className="btn-widget"
-          onClick={() => navigate("/vencimientos")}
+          onClick={() => navigate("/auditorias?modo=proximos_venc")}
           aria-label={t("dashboard.widget.upcomingDueAria")}
         >
           {t("dashboard.widget.goToDeadline")}
@@ -131,4 +136,3 @@ export default function UpcomingDue() {
     </div>
   );
 }
-

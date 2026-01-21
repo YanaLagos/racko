@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { isValidRut, normalizeRut } from "../../utils/rut";
 
 function isValidEmail(email) {
-  if (!email) return false; // AHORA ES OBLIGATORIO
+  if (!email) return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
 }
 
@@ -21,10 +21,8 @@ export default function ExternalUserModal({
 }) {
   const { t } = useTranslation();
 
-  // paso del modal: "edit" | "confirm"
   const [step, setStep] = useState("edit");
 
-  // form
   const [rut, setRut] = useState("");
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -32,10 +30,8 @@ export default function ExternalUserModal({
   const [email, setEmail] = useState("");
   const [direccion, setDireccion] = useState("");
 
-  // snapshot para confirmar
   const [draft, setDraft] = useState(null);
 
-  // ui
   const [loading, setLoading] = useState(false);
   const [errorKey, setErrorKey] = useState("");
 
@@ -63,7 +59,6 @@ export default function ExternalUserModal({
   function validateToDraft() {
     setErrorKey("");
 
-    // obligatorios: rut, nombre, apellido, telefono, email
     if (
       !rut ||
       !nombre.trim() ||
@@ -121,7 +116,9 @@ export default function ExternalUserModal({
       onCreated?.(draft);
       onClose?.();
     } catch (e) {
-      setErrorKey(e?.response?.data?.error || "errors.externalUsers.createFailed");
+      setErrorKey(
+        e?.response?.data?.error || "errors.externalUsers.createFailed",
+      );
     } finally {
       setLoading(false);
     }
@@ -143,7 +140,9 @@ export default function ExternalUserModal({
         <h3>{t("users.title")}</h3>
         <p>{t("users.create.subtitle")}</p>
 
-        {errorKey && <div className="error modal-form-error">{t(errorKey)}</div>}
+        {errorKey && (
+          <div className="error modal-form-error">{t(errorKey)}</div>
+        )}
 
         {step === "edit" && (
           <>
@@ -224,19 +223,12 @@ export default function ExternalUserModal({
                 />
               </div>
 
-              <div className="modal-form-hint field full">{t("users.create.hint")}</div>
+              <div className="modal-form-hint field full">
+                {t("users.create.hint")}
+              </div>
             </div>
 
             <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-modal-logout"
-                onClick={onGuardarPaso1}
-                disabled={loading}
-              >
-                {t("common.continue")}
-              </button>
-
               <button
                 type="button"
                 className="btn-modal-cancel"
@@ -244,6 +236,14 @@ export default function ExternalUserModal({
                 disabled={loading}
               >
                 {t("common.cancel")}
+              </button>
+              <button
+                type="button"
+                className="btn-modal-logout"
+                onClick={onGuardarPaso1}
+                disabled={loading}
+              >
+                {t("common.continue")}
               </button>
             </div>
           </>
@@ -268,12 +268,20 @@ export default function ExternalUserModal({
 
               <div className="field">
                 <label>{t("users.create.fields.apellido")}</label>
-                <input className="input" value={fmt(draft?.apellido)} disabled />
+                <input
+                  className="input"
+                  value={fmt(draft?.apellido)}
+                  disabled
+                />
               </div>
 
               <div className="field">
                 <label>{t("users.create.fields.telefono")}</label>
-                <input className="input" value={fmt(draft?.telefono)} disabled />
+                <input
+                  className="input"
+                  value={fmt(draft?.telefono)}
+                  disabled
+                />
               </div>
 
               <div className="field full">
@@ -283,20 +291,15 @@ export default function ExternalUserModal({
 
               <div className="field full">
                 <label>{t("users.create.fields.direccion")}</label>
-                <input className="input" value={fmt(draft?.direccion)} disabled />
+                <input
+                  className="input"
+                  value={fmt(draft?.direccion)}
+                  disabled
+                />
               </div>
             </div>
 
             <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-modal-logout"
-                onClick={onConfirmarCreacion}
-                disabled={loading}
-              >
-                {t("common.confirm")}
-              </button>
-
               <button
                 type="button"
                 className="btn-modal-cancel"
@@ -304,6 +307,14 @@ export default function ExternalUserModal({
                 disabled={loading}
               >
                 {t("common.back")}
+              </button>
+              <button
+                type="button"
+                className="btn-modal-logout"
+                onClick={onConfirmarCreacion}
+                disabled={loading}
+              >
+                {t("common.confirm")}
               </button>
             </div>
           </>
