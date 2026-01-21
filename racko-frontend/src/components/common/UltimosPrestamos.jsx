@@ -52,7 +52,7 @@ export default function UltimosPrestamos({ limit = 5 }) {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [limit]);
 
   function goToCategoria(row) {
@@ -132,7 +132,7 @@ export default function UltimosPrestamos({ limit = 5 }) {
                             : t("dashboard.lastMoves.viewCategoryTitle")
                         }
                       >
-                        {t("common.viewMore")}
+                        {t("assets.actions.viewResources")}
                       </button>
                     </td>
                   </tr>
