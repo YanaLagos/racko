@@ -17,6 +17,11 @@ export default function Activos() {
   const [openEdit, setOpenEdit] = useState(false);
   const [confirmCreate, setConfirmCreate] = useState(false);
   const [openConfirmDeactivate, setOpenConfirmDeactivate] = useState(false);
+  const [originalForm, setOriginalForm] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    nombre: "",
+    descripcion: "",
+  });
 
   const [form, setForm] = useState({
     id_categoria: "",
@@ -32,6 +37,12 @@ export default function Activos() {
   const [loading, setLoading] = useState(true);
   const [errorKey, setErrorKey] = useState("");
 
+  const editNoChanges =
+    !originalForm ||
+    ((form.nombre || "").trim() === (originalForm.nombre || "").trim() &&
+      (form.descripcion || "").trim() ===
+        (originalForm.descripcion || "").trim());
+
   function openCreateModal() {
     setFormErrorKey("");
     setForm({ id_categoria: "", nombre: "", descripcion: "", estado: 1 });
@@ -40,18 +51,46 @@ export default function Activos() {
 
   function openEditModal(c) {
     setFormErrorKey("");
-    setForm({
+
+    const base = {
       id_categoria: c.id_categoria,
       nombre: c.nombre || "",
       descripcion: c.descripcion || "",
       estado: c.estado ?? 1,
-    });
+    };
+
+    setForm(base);
+    setOriginalForm(base);
     setOpenEdit(true);
   }
 
   async function reloadCategorias() {
     const resp = await listCategoriasApi();
     if (resp?.ok) setCategorias(resp.data || []);
+  }
+
+  function validateCategoryForm(currentForm) {
+    const errors = { nombre: "", descripcion: "" };
+    const nombre = (currentForm.nombre || "").trim();
+
+    if (!nombre) errors.nombre = "errors.validation.required";
+    return errors;
+  }
+
+  function hasErrors(errs) {
+    return Boolean(errs.nombre || errs.descripcion);
+  }
+
+  function goConfirmCreate() {
+    const nombre = (form.nombre || "").trim();
+
+    if (!nombre) {
+      setFormErrorKey("errors.validation.requiredFields");
+      return;
+    }
+
+    setFormErrorKey("");
+    setConfirmCreate(true);
   }
 
   async function handleCreate() {
@@ -98,15 +137,20 @@ export default function Activos() {
     const nombre = (form.nombre || "").trim();
     const descripcion = (form.descripcion || "").trim();
 
+    const origNombre = (originalForm?.nombre || "").trim();
+    const origDesc = (originalForm?.descripcion || "").trim();
+
+    const noChanges = nombre === origNombre && descripcion === origDesc;
+
+    if (noChanges) {
+      setFormErrorKey("errors.validation.noChanges");
+      return;
+    }
+
     if (!id || !nombre) {
       setFormErrorKey("errors.validation.requiredFields");
       return;
     }
-
-    if (
-      !window.confirm(`¿Confirmas guardar los cambios de la categoría #${id}?`)
-    )
-      return;
 
     try {
       setSaving(true);
@@ -253,7 +297,7 @@ export default function Activos() {
                       navigate(`/activos/categoria/${c.id_categoria}`)
                     }
                   >
-                    {t("resources.actions.viewResources", "Ver más")}
+                    {t("assets.actions.viewResources", "Ver Recursos")}
                   </button>
 
                   {isAdmin && (
@@ -287,19 +331,21 @@ export default function Activos() {
             <h3>
               {confirmCreate
                 ? t(
-                    "assets.actions.confirmCreateCategory",
-                    "Confirmar categoría",
+                    "assets.actions.confirmCreation",
+                    "Confirmar crear categoría",
                   )
                 : t("assets.actions.createCategory", "Crear categoría")}
             </h3>
 
             {formErrorKey && <p className="error">{t(formErrorKey)}</p>}
 
-            {/* PASO 1: EDITAR */}
+            {/* PASO 1: CREAR */}
             {!confirmCreate && (
               <>
                 <div className="field">
-                  <label>{t("assets.fields.name", "Nombre")}</label>
+                  <label className="label-required">
+                    {t("assets.fields.name", "Nombre")}
+                  </label>
                   <input
                     className="input"
                     value={form.nombre}
@@ -323,7 +369,9 @@ export default function Activos() {
                     disabled={saving}
                   />
                 </div>
-
+                <div className="modal-form-hint">
+                  {t("common.requiredFieldsNote", "Campos obligatorios *")}
+                </div>
                 <div className="modal-actions" style={{ marginTop: 16 }}>
                   <button
                     className="btn-modal-cancel"
@@ -336,7 +384,7 @@ export default function Activos() {
                   <button
                     className="btn-modal-primary"
                     type="button"
-                    onClick={() => setConfirmCreate(true)}
+                    onClick={goConfirmCreate}
                     disabled={saving}
                   >
                     {t("common.continue", "Continuar")}
@@ -345,7 +393,7 @@ export default function Activos() {
               </>
             )}
 
-            {/* PASO 2: REVISAR / CONFIRMAR (SIN INPUTS) */}
+            {/* PASO 2: REVISAR / CONFIRMAR */}
             {confirmCreate && (
               <div className="modal-confirm-section" style={{ marginTop: 12 }}>
                 <p className="modal-hint">
@@ -405,7 +453,11 @@ export default function Activos() {
       {openEdit && (
         <div
           className="modal-backdrop"
-          onMouseDown={() => setOpenEdit(false)}
+          onClick={() => {
+            setOpenEdit(false);
+            setOriginalForm(null);
+            setFormErrorKey("");
+          }}
           role="presentation"
         >
           <div
@@ -440,6 +492,9 @@ export default function Activos() {
                 }
                 disabled={saving}
               />
+              {fieldErrors.nombre && (
+                <p className="field-error">{t(errors.required.nombre)}</p>
+              )}
             </div>
 
             <div className="field" style={{ marginTop: 12 }}>
@@ -459,7 +514,12 @@ export default function Activos() {
               <button
                 className="btn-modal-cancel"
                 type="button"
-                onClick={() => setOpenEdit(false)}
+                onMouseDown={() => {
+                  if (saving) return;
+                  setOpenEdit(false);
+                  setOriginalForm(null);
+                  setFormErrorKey("");
+                }}
                 disabled={saving}
               >
                 {t("common.cancel", "Cancelar")}
@@ -557,8 +617,9 @@ export default function Activos() {
           </div>
         </div>
       )}
-      <UbicacionSection />
-
+      <div className="loc-section">
+        <UbicacionSection />
+      </div>
     </div>
   );
 }

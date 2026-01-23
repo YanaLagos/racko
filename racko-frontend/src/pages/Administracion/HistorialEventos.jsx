@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { http } from "../../api/http";
+import { initResize } from "../../utils/tableResize";
 
 const PAGE_SIZE = 30;
 
@@ -80,27 +81,6 @@ export default function HistorialEventos() {
 
   const [page, setPage] = useState(1);
 
-  const initResize = (e) => {
-    const th = e.target.parentElement;
-    const startX = e.pageX;
-    const startWidth = th.offsetWidth;
-
-    const onMouseMove = (moveEvent) => {
-      const currentWidth = startWidth + (moveEvent.pageX - startX);
-      if (currentWidth > 60) th.style.width = `${currentWidth}px`;
-    };
-
-    const onMouseUp = () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-      document.body.style.cursor = "default";
-    };
-
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-    document.body.style.cursor = "col-resize";
-  };
-
   const parseDetalle = (detalleStr) => {
     if (!detalleStr) return t("events.detail.unknown", "Evento desconocido");
     if (!detalleStr.includes("|")) return detalleStr;
@@ -174,7 +154,6 @@ export default function HistorialEventos() {
         responseType: "blob",
       });
 
-      // Si por alguna razón el server devuelve JSON con 200, lo detectamos
       const contentType = resp.headers?.["content-type"] || "";
       if (contentType.includes("application/json")) {
         const text = await resp.data.text();
@@ -191,7 +170,6 @@ export default function HistorialEventos() {
       window.open(fileURL, "_blank", "noopener,noreferrer");
       setTimeout(() => URL.revokeObjectURL(fileURL), 60_000);
     } catch (e) {
-      // Si viene error con responseType blob, e.response.data es Blob
       try {
         const blob = e?.response?.data;
         if (blob && typeof blob.text === "function") {
@@ -233,7 +211,6 @@ export default function HistorialEventos() {
 
   useEffect(() => {
     consultar(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const total = meta?.total ?? 0;
@@ -256,41 +233,82 @@ export default function HistorialEventos() {
   }
 
   function getRefTipo(ev) {
+    const rt = ev?.ref_tipo || ev?.refTipo || "";
+
+    if (rt) {
+      const map = {
+        recurso: "events.ref.resource",
+        categoria: "events.ref.category",
+        ubicacion: "events.ref.location",
+        externo: "events.ref.external",
+        prestamo: "events.ref.loan",
+        usuario_interno: "events.ref.internalUser",
+      };
+
+      const key = map[String(rt).toLowerCase()] || "events.ref.unknown";
+      return t(key, "—");
+    }
+
     if (ev?.id_recurso) return t("events.ref.resource", "Recurso");
     if (ev?.id_categoria) return t("events.ref.category", "Categoría");
     if (ev?.id_ubicacion) return t("events.ref.location", "Ubicación");
     if (ev?.rut_usuario_externo) return t("events.ref.external", "Externo");
     if (ev?.id_registro_prestamo) return t("events.ref.loan", "Préstamo");
+    if (ev?.id_usuario_interno)
+      return t("events.ref.internalUser", "Usuario interno");
     return "—";
   }
 
   function getRefValor(ev) {
+    const rt = ev?.ref_tipo || ev?.refTipo || "";
+    const refId = ev?.ref_id ?? ev?.refId ?? null;
+    const refNombre =
+      ev?.ref_nombre ?? ev?.refNombre ?? ev?.ref_valor ?? ev?.refValor ?? "";
+
+    if (rt) {
+      const rtNorm = String(rt).toLowerCase();
+
+      if (rtNorm === "usuario_interno") {
+        const name =
+          refNombre ||
+          `${ev?.nombre_usuario_afectado || ""} ${ev?.apellido_usuario_afectado || ""}`.trim();
+
+        if (refId != null) return `#${refId}${name ? ` · ${name}` : ""}`;
+        return name || "—";
+      }
+
+      if (refId != null && refNombre) return `#${refId} · ${refNombre}`;
+      if (refId != null) return `#${refId}`;
+      if (refNombre) return String(refNombre);
+    }
+
     if (ev?.id_recurso) {
       const name = ev?.nombre_recurso ? ` · ${ev.nombre_recurso}` : "";
       return `#${ev.id_recurso}${name}`;
     }
-
     if (ev?.id_categoria) {
       const name = ev?.nombre_categoria ? ` · ${ev.nombre_categoria}` : "";
       return `#${ev.id_categoria}${name}`;
     }
-
     if (ev?.id_ubicacion) {
       const name = ev?.nombre_ubicacion ? ` · ${ev.nombre_ubicacion}` : "";
       return `#${ev.id_ubicacion}${name}`;
     }
-
     if (ev?.rut_usuario_externo) {
       const fullName =
         ev?.nombre_externo || ev?.apellido_externo
-          ? ` · ${ev?.nombre_externo || ""} ${
-              ev?.apellido_externo || ""
-            }`.trim()
+          ? ` · ${ev?.nombre_externo || ""} ${ev?.apellido_externo || ""}`.trim()
           : "";
       return `${ev.rut_usuario_externo}${fullName}`;
     }
-
-    if (ev?.id_registro_prestamo) return `#${ev.id_registro_prestamo}`;
+    if (ev?.id_registro_prestamo) 
+      return `#${ev.id_registro_prestamo}`;
+    if (ev?.id_usuario_interno) {
+      const name = ev?.nombre_usuario
+        ? `${ev.nombre_usuario} ${ev.apellido_usuario || ""}`.trim()
+        : "";
+      return `#${ev.id_usuario_interno}${name ? ` · ${name}` : ""}`;
+    }
     return "—";
   }
 
@@ -298,8 +316,8 @@ export default function HistorialEventos() {
     refTipo === "externo"
       ? t("events.filters.refValueExternalPh", "RUT o nombre/apellido")
       : refTipo
-      ? t("events.filters.refValuePh", "ID o nombre")
-      : t("events.filters.refValueDisabledPh", "Selecciona un tipo");
+        ? t("events.filters.refValuePh", "ID o nombre")
+        : t("events.filters.refValueDisabledPh", "Selecciona un tipo");
 
   return (
     <div className="panel events-page">
@@ -376,7 +394,7 @@ export default function HistorialEventos() {
                 onChange={(e) => setUsuario(e.target.value)}
                 placeholder={t(
                   "events.filters.internalUserPh",
-                  "Nombre o apellido"
+                  "Nombre o apellido",
                 )}
               />
             </div>
@@ -404,7 +422,7 @@ export default function HistorialEventos() {
               <input
                 value={refValor}
                 onChange={(e) => setRefValor(e.target.value)}
-                placeholder={t("events.filters.refValuePh", "Id, nombre o RUT")}
+                placeholder={refValorPlaceholder}
               />
             </div>
 
@@ -424,7 +442,7 @@ export default function HistorialEventos() {
                 onClick={onLimpiarClick}
                 disabled={loading}
               >
-                {t("common.clear", "Limpiar")}
+                {t("events.actions.clear", "Limpiar")}
               </button>
 
               <button
@@ -451,13 +469,10 @@ export default function HistorialEventos() {
 
       {/* TABLA */}
       <div className="events-table-wrap">
-        <table
-          className="events-table"
-          style={{ tableLayout: "fixed", width: "100%", minWidth: "100%" }}
-        >
+        <table className="events-table">
           <thead>
             <tr>
-              <th style={{ width: "90px" }}>
+              <th style={{ width: "40px" }}>
                 {t("events.cols.eventId", "ID")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
@@ -465,23 +480,23 @@ export default function HistorialEventos() {
                 {t("events.cols.dateTime", "Fecha/Hora")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "160px" }}>
+              <th style={{ width: "130px" }}>
                 {t("events.cols.type", "Tipo")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "230px" }}>
+              <th style={{ width: "130px" }}>
                 {t("events.cols.internalUser", "Usuario interno")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "140px" }}>
+              <th style={{ width: "100px" }}>
                 {t("events.cols.refType", "Ref. tipo")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "220px" }}>
+              <th style={{ width: "200px" }}>
                 {t("events.cols.refValue", "Ref. valor")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "420px" }}>
+              <th style={{ width: "400px" }}>
                 {t("events.cols.detail", "Detalle")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
@@ -534,7 +549,7 @@ export default function HistorialEventos() {
           {t(
             "events.table.pagination.pageOf",
             { page, totalPages },
-            `Página ${page} de ${totalPages}`
+            `Página ${page} de ${totalPages}`,
           )}
         </div>
 

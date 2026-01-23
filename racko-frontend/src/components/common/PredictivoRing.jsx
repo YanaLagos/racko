@@ -35,7 +35,7 @@ export default function PredictivoRing({
         </linearGradient>
       </defs>
 
-      {/* BASE: círculo completo */}
+      {/* BASE */}
       <circle
         cx={cx}
         cy={cy}
@@ -46,7 +46,7 @@ export default function PredictivoRing({
         strokeLinecap="round"
       />
 
-      {/* PROGRESO: arranca abajo */}
+      {/* PROGRESO */}
       <g transform={`rotate(90 ${cx} ${cy})`}>
         <circle
           cx={cx}

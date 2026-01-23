@@ -32,11 +32,17 @@ const Administracion = () => {
     id_rol: "",
   });
 
+  const [createErrorKey, setCreateErrorKey] = useState("");
+
   // Modal editar
   const [isModalEditarOpen, setIsModalEditarOpen] = useState(false);
   const [userEdit, setUserEdit] = useState(null);
-  const [editPassword, setEditPassword] = useState("");
   const [openConfirmEstado, setOpenConfirmEstado] = useState(false);
+
+  const [pasoEditar, setPasoEditar] = useState(1);
+  const [originalUserEdit, setOriginalUserEdit] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editErrorKey, setEditErrorKey] = useState("");
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -75,7 +81,7 @@ const Administracion = () => {
     );
   }, [usuarios, busqueda]);
 
-  // Auditoría (decode)
+  // Auditoría 
   const parseDetalle = (detalleStr) => {
     if (!detalleStr) return t("audits.unknown");
     if (!detalleStr.includes("|")) return detalleStr;
@@ -95,7 +101,6 @@ const Administracion = () => {
     return t(key, params);
   };
 
-  // Crear usuario (backend envía invitación)
   const handleGuardarNuevoUsuario = async () => {
     try {
       const payload = {
@@ -160,9 +165,8 @@ const Administracion = () => {
     }
   };
 
-  // Abrir editar
   const openEditar = (user) => {
-    setUserEdit({
+    const base = {
       id_usuario: user.id_usuario,
       nombre: user.nombre || "",
       apellido: user.apellido || "",
@@ -170,8 +174,12 @@ const Administracion = () => {
       idioma: user.idioma || "es",
       rol_nombre: user.rol_nombre || "",
       estado: user.estado,
-    });
-    setEditPassword("");
+    };
+
+    setUserEdit(base);
+    setOriginalUserEdit(base);
+    setPasoEditar(1);
+    setEditErrorKey("");
     setIsModalEditarOpen(true);
   };
 
@@ -179,14 +187,15 @@ const Administracion = () => {
     if (!userEdit) return;
 
     try {
+      setSavingEdit(true);
+      setEditErrorKey("");
+
       const payload = {
-        nombre: userEdit.nombre,
-        apellido: userEdit.apellido,
-        email: userEdit.email,
+        nombre: (userEdit.nombre || "").trim(),
+        apellido: (userEdit.apellido || "").trim(),
+        email: (userEdit.email || "").trim(),
         idioma: userEdit.idioma,
       };
-
-      if (editPassword.trim()) payload.password = editPassword.trim();
 
       const res = await actualizarUsuarioInternoApi(
         userEdit.id_usuario,
@@ -196,24 +205,61 @@ const Administracion = () => {
       if (res?.ok) {
         setIsModalEditarOpen(false);
         setUserEdit(null);
-        setEditPassword("");
-        await cargarDatos();
+        setOriginalUserEdit(null);
+        setPasoEditar(1);
 
+        await cargarDatos();
         alert(t("success.internalUsers.updated"));
       } else {
-        alert(t("errors.internalUsers.updateFailed"));
+        setEditErrorKey("errors.internalUsers.updateFailed");
       }
     } catch (error) {
-      alert(
-        t(error.response?.data?.error || "errors.internalUsers.updateFailed"),
+      setEditErrorKey(
+        error.response?.data?.error || "errors.internalUsers.updateFailed",
       );
+    } finally {
+      setSavingEdit(false);
     }
   };
 
-  const handleReenviarInvitacion = async (user) => {
-    const ok = window.confirm(t("users.actions.inviteConfirm"));
-    if (!ok) return;
+  const editNoChanges = useMemo(() => {
+    if (!userEdit || !originalUserEdit) return false;
 
+    const n1 = (userEdit.nombre || "").trim();
+    const a1 = (userEdit.apellido || "").trim();
+    const e1 = (userEdit.email || "").trim();
+    const i1 = (userEdit.idioma || "es").trim();
+
+    const n0 = (originalUserEdit.nombre || "").trim();
+    const a0 = (originalUserEdit.apellido || "").trim();
+    const e0 = (originalUserEdit.email || "").trim();
+    const i0 = (originalUserEdit.idioma || "es").trim();
+
+    return n1 === n0 && a1 === a0 && e1 === e0 && i1 === i0;
+  }, [userEdit, originalUserEdit]);
+
+  const goConfirmEdit = () => {
+    if (!userEdit) return;
+
+    const nombre = (userEdit.nombre || "").trim();
+    const apellido = (userEdit.apellido || "").trim();
+    const email = (userEdit.email || "").trim();
+
+    if (!nombre || !apellido || !email) {
+      setEditErrorKey("errors.validation.requiredFields");
+      return;
+    }
+
+    if (editNoChanges) {
+      setEditErrorKey("errors.validation.noChanges");
+      return;
+    }
+
+    setEditErrorKey("");
+    setPasoEditar(2);
+  };
+
+  const handleReenviarInvitacion = async (user) => {
     try {
       const res = await reenviarInvitacionPasswordApi(user.id_usuario);
       if (res?.ok) {
@@ -235,7 +281,7 @@ const Administracion = () => {
         <h1>{t("administrator.title")}</h1>
       </header>
 
-      {/* ACTIVIDAD RECIENTE */}
+      {/* EVENTOS  RECIENTES */}
       <section className="activity-container-card">
         <div className="section-title-row">
           <h3>{t("administrator.activity.title")}</h3>
@@ -373,7 +419,7 @@ const Administracion = () => {
         </div>
       </section>
 
-      {/* MODAL CREAR */}
+      {/* MODAL CREAR INT */}
       {isModalCrearOpen && (
         <div
           className="modal-backdrop"
@@ -392,13 +438,18 @@ const Administracion = () => {
             {pasoCrear === 1 ? (
               <>
                 <h3>{t("users.create.title")}</h3>
+                {createErrorKey && (
+                  <p className="error">
+                    {t(createErrorKey, "Faltan campos obligatorios")}
+                  </p>
+                )}
                 <p className="modal-form-hint">
                   {t("users.create.inviteHint")}
                 </p>
 
                 <div className="modal-form-grid">
                   <div className="field">
-                    <label>{t("users.create.fields.nombre")}</label>
+                    <label className="label-required">{t("users.create.fields.nombre")}</label>
                     <input
                       className="input-modal-user"
                       placeholder={t("users.create.fields.nombrePh")}
@@ -410,7 +461,7 @@ const Administracion = () => {
                   </div>
 
                   <div className="field">
-                    <label>{t("users.create.fields.apellido")}</label>
+                    <label className="label-required">{t("users.create.fields.apellido")}</label>
                     <input
                       className="input-modal-user"
                       placeholder={t("users.create.fields.apellidoPh")}
@@ -425,7 +476,7 @@ const Administracion = () => {
                   </div>
 
                   <div className="field">
-                    <label>{t("users.create.fields.username")}</label>
+                    <label className="label-required">{t("users.create.fields.username")}</label>
                     <input
                       className="input-modal-user"
                       placeholder={t("users.create.fields.usernamePh")}
@@ -440,7 +491,7 @@ const Administracion = () => {
                   </div>
 
                   <div className="field">
-                    <label>{t("users.create.fields.email")}</label>
+                    <label className="label-required">{t("users.create.fields.email")}</label>
                     <input
                       className="input-modal-user"
                       placeholder={t("users.create.fields.emailPh")}
@@ -452,7 +503,7 @@ const Administracion = () => {
                   </div>
 
                   <div className="field full">
-                    <label>{t("users.create.fields.rol")}</label>
+                    <label className="label-required">{t("users.create.fields.rol")}</label>
                     <select
                       className="input-modal-user"
                       value={nuevoUser.id_rol}
@@ -468,6 +519,9 @@ const Administracion = () => {
                         {t("users.create.fields.rolColab")}
                       </option>
                     </select>
+                  </div>
+                  <div className="modal-form-hint">
+                    {t("common.requiredFieldsNote", "Campos obligatorios *")}
                   </div>
                 </div>
 
@@ -486,8 +540,24 @@ const Administracion = () => {
                   <button
                     type="button"
                     className="btn-modal-primary"
-                    disabled={!nuevoUser.id_rol}
-                    onClick={() => setPasoCrear(2)}
+                    onClick={() => {
+                      const { nombre, apellido, username, email, id_rol } =
+                        nuevoUser;
+
+                      if (
+                        !nombre.trim() ||
+                        !apellido.trim() ||
+                        !username.trim() ||
+                        !email.trim() ||
+                        !id_rol
+                      ) {
+                        setCreateErrorKey("errors.validation.requiredFields");
+                        return;
+                      }
+
+                      setCreateErrorKey("");
+                      setPasoCrear(2);
+                    }}
                   >
                     {t("users.create.actions.next")}
                   </button>
@@ -548,9 +618,12 @@ const Administracion = () => {
         <div
           className="modal-backdrop"
           onMouseDown={() => {
+            if (savingEdit) return;
             setIsModalEditarOpen(false);
             setUserEdit(null);
-            setEditPassword("");
+            setOriginalUserEdit(null);
+            setPasoEditar(1);
+            setEditErrorKey("");
           }}
           role="presentation"
         >
@@ -560,127 +633,247 @@ const Administracion = () => {
             role="dialog"
             aria-modal="true"
           >
-            <h3>{t("users.edit.title")}</h3>
+            <h3>
+              {pasoEditar === 1
+                ? t("users.edit.title")
+                : t("users.edit.confirmTitle", "Confirmar cambios")}
+            </h3>
 
-            <div className="modal-form-grid">
-              <div className="field">
-                <label>{t("users.cols.id")}</label>
-                <input
-                  className="input-modal-user"
-                  value={String(userEdit.id_usuario)}
-                  disabled
-                />
-              </div>
+            {editErrorKey && <p className="error">{t(editErrorKey)}</p>}
+            {pasoEditar === 1 && (
+              <>
+                <div className="modal-form-grid">
+                  <div className="field">
+                    <label>{t("users.cols.id")}</label>
+                    <input
+                      className="input-modal-user"
+                      value={String(userEdit.id_usuario)}
+                      disabled
+                    />
+                  </div>
 
-              <div className="field">
-                <label>{t("users.create.fields.rol")}</label>
-                <input
-                  className="input-modal-user"
-                  value={userEdit.rol_nombre}
-                  disabled
-                />
-              </div>
+                  <div className="field">
+                    <label>{t("users.create.fields.rol")}</label>
+                    <input
+                      className="input-modal-user"
+                      value={userEdit.rol_nombre}
+                      disabled
+                    />
+                  </div>
 
-              <div className="field">
-                <label>{t("users.create.fields.nombre")}</label>
-                <input
-                  className="input-modal-user"
-                  placeholder={t("users.create.fields.nombrePh")}
-                  value={userEdit.nombre}
-                  onChange={(e) =>
-                    setUserEdit((p) => ({ ...p, nombre: e.target.value }))
-                  }
-                />
-              </div>
+                  <div className="field">
+                    <label>{t("users.create.fields.nombre")}</label>
+                    <input
+                      className="input-modal-user"
+                      value={userEdit.nombre}
+                      onChange={(e) =>
+                        setUserEdit((p) => ({ ...p, nombre: e.target.value }))
+                      }
+                      disabled={savingEdit}
+                    />
+                  </div>
 
-              <div className="field">
-                <label>{t("users.create.fields.apellido")}</label>
-                <input
-                  className="input-modal-user"
-                  placeholder={t("users.create.fields.apellidoPh")}
-                  value={userEdit.apellido}
-                  onChange={(e) =>
-                    setUserEdit((p) => ({ ...p, apellido: e.target.value }))
-                  }
-                />
-              </div>
+                  <div className="field">
+                    <label>{t("users.create.fields.apellido")}</label>
+                    <input
+                      className="input-modal-user"
+                      value={userEdit.apellido}
+                      onChange={(e) =>
+                        setUserEdit((p) => ({ ...p, apellido: e.target.value }))
+                      }
+                      disabled={savingEdit}
+                    />
+                  </div>
 
-              <div className="field">
-                <label>{t("users.create.fields.email")}</label>
-                <input
-                  className="input-modal-user"
-                  placeholder={t("users.create.fields.emailPh")}
-                  value={userEdit.email}
-                  onChange={(e) =>
-                    setUserEdit((p) => ({ ...p, email: e.target.value }))
-                  }
-                />
-              </div>
+                  <div className="field">
+                    <label>{t("users.create.fields.email")}</label>
+                    <input
+                      className="input-modal-user"
+                      value={userEdit.email}
+                      onChange={(e) =>
+                        setUserEdit((p) => ({ ...p, email: e.target.value }))
+                      }
+                      disabled={savingEdit}
+                    />
+                  </div>
 
-              <div className="field">
-                <label>
-                  {t("common.lang.es")}/{t("common.lang.en")}
-                </label>
-                <select
-                  className="input-modal-user"
-                  value={userEdit.idioma}
-                  onChange={(e) =>
-                    setUserEdit((p) => ({ ...p, idioma: e.target.value }))
-                  }
-                >
-                  <option value="es">{t("common.lang.es")}</option>
-                  <option value="en">{t("common.lang.en")}</option>
-                </select>
-              </div>
+                  <div className="field">
+                    <label>
+                      {t("common.lang.es")}/{t("common.lang.en")}
+                    </label>
+                    <select
+                      className="input-modal-user"
+                      value={userEdit.idioma}
+                      onChange={(e) =>
+                        setUserEdit((p) => ({ ...p, idioma: e.target.value }))
+                      }
+                      disabled={savingEdit}
+                    >
+                      <option value="es">{t("common.lang.es")}</option>
+                      <option value="en">{t("common.lang.en")}</option>
+                    </select>
+                  </div>
 
-              <div className="field full">
-                <div className="modal-form-hint">
-                  {t("administrator.internalUsers.roleRestriction")}
+                  <div className="field full">
+                    <div className="modal-form-hint">
+                      {t("administrator.internalUsers.roleRestriction")}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-modal-cancel"
-                onClick={() => {
-                  setIsModalEditarOpen(false);
-                  setUserEdit(null);
-                  setEditPassword("");
-                }}
-              >
-                {t("common.cancel")}
-              </button>
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn-modal-cancel"
+                    onClick={() => {
+                      if (savingEdit) return;
+                      setIsModalEditarOpen(false);
+                      setUserEdit(null);
+                      setOriginalUserEdit(null);
+                      setPasoEditar(1);
+                      setEditErrorKey("");
+                    }}
+                    disabled={savingEdit}
+                  >
+                    {t("common.cancel")}
+                  </button>
 
-              <button
-                type="button"
-                className="btn-modal-primary"
-                onClick={handleGuardarEdicion}
-              >
-                {t("users.edit.save")}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    className="btn-modal-primary"
+                    onClick={goConfirmEdit}
+                    disabled={savingEdit}
+                  >
+                    {t("common.continue", "Continuar")}
+                  </button>
+                </div>
 
-            <div>
-              <div className="modal-form-hint">
-                {t("users.modal.deactivate.text")}
-              </div>
+                <div>
+                  <div className="modal-form-hint">
+                    {t("users.modal.deactivate.text")}
+                  </div>
 
-              <button
-                type="button"
-                className="btn-deactivate"
-                onClick={() => setOpenConfirmEstado(true)}
-              >
-                {userEdit.estado === 1
-                  ? t("users.actions.deactivate")
-                  : t("users.actions.activate")}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    className="btn-deactivate"
+                    onClick={() => setOpenConfirmEstado(true)}
+                    disabled={savingEdit}
+                  >
+                    {userEdit.estado === 1
+                      ? t("users.actions.deactivate")
+                      : t("users.actions.activate")}
+                  </button>
+                </div>
+              </>
+            )}
+            {pasoEditar === 2 && (
+              <>
+                <p className="modal-form-hint" style={{ marginTop: 8 }}>
+                  {t(
+                    "users.edit.reviewBeforeSave",
+                    "Revisa todos los datos antes de confirmar los cambios:",
+                  )}
+                </p>
+
+                <div className="modal-review" style={{ marginTop: 10 }}>
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.cols.id", "ID")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {userEdit.id_usuario}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.create.fields.rol", "Rol")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {userEdit.rol_nombre || "--"}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.create.fields.nombre", "Nombre")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {(userEdit.nombre || "").trim() || "--"}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.create.fields.apellido", "Apellido")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {(userEdit.apellido || "").trim() || "--"}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.create.fields.email", "Email")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {(userEdit.email || "").trim() || "--"}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.cols.lang", "Idioma")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {userEdit.idioma === "en"
+                        ? t("common.lang.en")
+                        : t("common.lang.es")}
+                    </span>
+                  </div>
+
+                  <div className="modal-review-row">
+                    <span className="modal-review-label">
+                      {t("users.cols.state", "Estado")}:
+                    </span>
+                    <span className="modal-review-value">
+                      {userEdit.estado === 1
+                        ? t("users.modal.active")
+                        : t("users.modal.inactive")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="modal-actions" style={{ marginTop: 16 }}>
+                  <button
+                    type="button"
+                    className="btn-modal-cancel"
+                    onClick={() => {
+                      if (savingEdit) return;
+                      setPasoEditar(1);
+                    }}
+                    disabled={savingEdit}
+                  >
+                    {t("common.back", "Volver a editar")}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-modal-primary"
+                    onClick={handleGuardarEdicion}
+                    disabled={savingEdit}
+                    autoFocus
+                  >
+                    {t("common.confirm", "Confirmar")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
-      {/* MODAL CONFIRMAR CAMBIO DE ESTADO */}
+
+      {/* MODAL CONFIRMAR DESACTIVACIÓN */}
       {openConfirmEstado && userEdit && (
         <div
           className="modal-backdrop"
@@ -763,7 +956,9 @@ const Administracion = () => {
                   setOpenConfirmEstado(false);
                   setIsModalEditarOpen(false);
                   setUserEdit(null);
-                  setEditPassword("");
+                  setOriginalUserEdit(null);
+                  setPasoEditar(1);
+                  setEditErrorKey("");
                 }}
               >
                 {userEdit.estado === 1

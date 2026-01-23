@@ -4,7 +4,14 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import RackoLogo from "../../assets/logo-racko.svg?react";
 
-export default function Sidebar() {
+import HomeIcon from "../../assets/home.svg?react";
+import AssetsIcon from "../../assets/assets.svg?react";
+import AuditIcon from "../../assets/report.svg?react";
+import UsersIcon from "../../assets/users.svg?react";
+import AdminIcon from "../../assets/admin.svg?react";
+import SignOut from "../../assets/sign-out.svg?react";
+
+export default function Sidebar({ onNavigate, className = "" }) {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -20,20 +27,36 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="sidebar">
+      <aside className={`sidebar ${className}`}>
         <div className="sidebar-logo">
           <RackoLogo className="sidebar-logo-svg" />
         </div>
 
         <nav className="sidebar-menu">
-          <NavLink to="/" end className={linkClass}>{t("menu.home")}</NavLink>
-          <NavLink to="/activos" className={linkClass}>{t("menu.assets")}</NavLink>
-          <NavLink to="/auditorias" className={linkClass}>{t("menu.audit")}</NavLink>
-          <NavLink to="/usuarios" className={linkClass}>{t("menu.users")}</NavLink>
+          <NavLink to="/" end className={linkClass}>
+            <HomeIcon className="menu-icon" />
+            <span>{t("menu.home")}</span>
+          </NavLink>
+
+          <NavLink to="/activos" className={linkClass}>
+            <AssetsIcon className="menu-icon" />
+            <span>{t("menu.assets")}</span>
+          </NavLink>
+
+          <NavLink to="/auditorias" className={linkClass}>
+            <AuditIcon className="menu-icon" />
+            <span>{t("menu.audit")}</span>
+          </NavLink>
+
+          <NavLink to="/usuarios" className={linkClass}>
+            <UsersIcon className="menu-icon" />
+            <span>{t("menu.users")}</span>
+          </NavLink>
 
           {isAdmin && (
             <NavLink to="/administracion" className={linkClass}>
-              {t("menu.admin")}
+              <AdminIcon className="menu-icon" />
+              <span>{t("menu.admin")}</span>
             </NavLink>
           )}
         </nav>
@@ -44,7 +67,8 @@ export default function Sidebar() {
             className="side-link danger"
             onClick={() => setShowLogoutModal(true)}
           >
-            {t("menu.logout")}
+            <SignOut className="menu-icon" />
+            <span>{t("menu.logout")}</span>
           </button>
         </div>
       </aside>

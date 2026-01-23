@@ -128,7 +128,7 @@ async function listarPrestamosPorFrecuencia({
         p.fecha_vencimiento,
         CONCAT(ui.nombre, ' ', ui.apellido) AS registrado_por,
         p.observaciones,
-        COUNT(*) OVER (PARTITION BY p.id_recurso) AS frecuencia,
+        r.uso_acumulado AS frecuencia,
         ROW_NUMBER() OVER (
           PARTITION BY p.id_recurso
           ORDER BY p.fecha_prestamo DESC, p.id_prestamo DESC
@@ -202,7 +202,7 @@ async function obtenerPrestamosPorFrecuenciaParaReporte({
         p.fecha_vencimiento,
         CONCAT(ui.nombre, ' ', ui.apellido) AS registrado_por,
         p.observaciones,
-        COUNT(*) OVER (PARTITION BY p.id_recurso) AS frecuencia,
+        r.uso_acumulado AS frecuencia,
         ROW_NUMBER() OVER (
           PARTITION BY p.id_recurso
           ORDER BY p.fecha_prestamo DESC, p.id_prestamo DESC
@@ -317,26 +317,26 @@ async function obtenerPrestamosParaReporte({
   const orderSql = buildOrder(sortKey, sortDir);
 
   const query = `
-    SELECT
-      p.id_prestamo,
-      id_recurso,
-      id_categoria, 
-      r.nombre AS nombre_recurso,
-      CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
-      p.rut_usuario,
-      p.fecha_prestamo,
-      p.fecha_devolucion,
-      p.fecha_vencimiento,
-      CONCAT(ui.nombre, ' ', ui.apellido) AS registrado_por,
-      p.observaciones
-    FROM registro_prestamo p
-    LEFT JOIN usuario_externo ue ON TRIM(ue.rut) = TRIM(p.rut_usuario)
-    LEFT JOIN recurso_fisico r ON r.id_recurso = p.id_recurso
-    LEFT JOIN usuario_interno ui ON ui.id_usuario = p.id_usuario_interno
-    ${whereSql}
-    ${orderSql}
-    LIMIT ?
-  `;
+  SELECT
+    p.id_prestamo,
+    p.id_recurso AS id_recurso,
+    r.id_categoria AS id_categoria, 
+    r.nombre AS nombre_recurso,
+    CONCAT(ue.nombre, ' ', ue.apellido) AS prestado_a,
+    p.rut_usuario,
+    p.fecha_prestamo,
+    p.fecha_devolucion,
+    p.fecha_vencimiento,
+    CONCAT(ui.nombre, ' ', ui.apellido) AS registrado_por,
+    p.observaciones
+  FROM registro_prestamo p
+  LEFT JOIN usuario_externo ue ON TRIM(ue.rut) = TRIM(p.rut_usuario)
+  LEFT JOIN recurso_fisico r ON r.id_recurso = p.id_recurso
+  LEFT JOIN usuario_interno ui ON ui.id_usuario = p.id_usuario_interno
+  ${whereSql}
+  ${orderSql}
+  LIMIT ?
+`;
 
   const [rows] = await db.query(query, [...params, Number(maxRows)]);
   return { ok: true, status: 200, data: rows };

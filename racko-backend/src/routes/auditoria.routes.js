@@ -107,7 +107,14 @@ function buildFiltrosMovimientosFromQuery(query) {
   const rt = ref_tipo ? String(ref_tipo).toLowerCase().trim() : null;
   if (
     rt &&
-    !["recurso", "categoria", "ubicacion", "externo", "prestamo"].includes(rt)
+    ![
+      "recurso",
+      "categoria",
+      "ubicacion",
+      "externo",
+      "prestamo",
+      "usuario_interno",
+    ].includes(rt)
   ) {
     return { error: "errors.validation.invalidRefType" };
   }
@@ -190,7 +197,7 @@ router.get(
       console.error(error);
       return sendError(res, { status: 500, error: "errors.audit.fetchFailed" });
     }
-  }
+  },
 );
 
 router.get(
@@ -218,7 +225,7 @@ router.get(
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        'inline; filename="reporte_eventos.pdf"'
+        'inline; filename="reporte_eventos.pdf"',
       );
 
       const doc = new PDFDocument({ margin: 40, size: "A4" });
@@ -229,7 +236,7 @@ router.get(
         tPdf("events.pdf.title", {
           defaultValue: "Reporte de eventos - Racko",
         }),
-        { align: "center" }
+        { align: "center" },
       );
 
       doc.moveDown(0.3);
@@ -238,7 +245,7 @@ router.get(
         `${tPdf("events.pdf.generated", {
           defaultValue: "Generado",
         })}: ${new Date().toLocaleString(lang === "en" ? "en-US" : "es-CL")}`,
-        { align: "center" }
+        { align: "center" },
       );
 
       doc.moveDown(1);
@@ -273,31 +280,31 @@ router.get(
         tPdf("events.pdf.cols.date", { defaultValue: "Fecha" }),
         COL.fecha.x,
         yHead + cellPadY,
-        { width: COL.fecha.w, lineBreak: false, ellipsis: true }
+        { width: COL.fecha.w, lineBreak: false, ellipsis: true },
       );
       doc.text(
         tPdf("events.pdf.cols.type", { defaultValue: "Tipo" }),
         COL.tipo.x,
         yHead + cellPadY,
-        { width: COL.tipo.w, lineBreak: false, ellipsis: true }
+        { width: COL.tipo.w, lineBreak: false, ellipsis: true },
       );
       doc.text(
         tPdf("events.pdf.cols.user", { defaultValue: "Usuario" }),
         COL.usuario.x,
         yHead + cellPadY,
-        { width: COL.usuario.w, lineBreak: false, ellipsis: true }
+        { width: COL.usuario.w, lineBreak: false, ellipsis: true },
       );
       doc.text(
         tPdf("events.pdf.cols.refs", { defaultValue: "Refs" }),
         COL.refs.x,
         yHead + cellPadY,
-        { width: COL.refs.w, lineBreak: false, ellipsis: true }
+        { width: COL.refs.w, lineBreak: false, ellipsis: true },
       );
       doc.text(
         tPdf("events.pdf.cols.detail", { defaultValue: "Detalle" }),
         COL.detalle.x,
         yHead + cellPadY,
-        { width: COL.detalle.w, lineBreak: false, ellipsis: true }
+        { width: COL.detalle.w, lineBreak: false, ellipsis: true },
       );
 
       doc.save();
@@ -346,7 +353,7 @@ router.get(
 
         const fecha = r.fecha_hora
           ? new Date(r.fecha_hora).toLocaleString(
-              lang === "en" ? "en-US" : "es-CL"
+              lang === "en" ? "en-US" : "es-CL",
             )
           : "";
 
@@ -361,35 +368,40 @@ router.get(
           refParts.push(
             `${tPdf("events.refs.externo", { defaultValue: "Externo" })}: ${
               r.rut_usuario_externo
-            }`
+            }`,
           );
         }
         if (r.id_recurso) {
           refParts.push(
             `${tPdf("events.refs.recurso", { defaultValue: "Recurso" })}: #${
               r.id_recurso
-            }`
+            }`,
           );
         }
         if (r.id_registro_prestamo) {
           refParts.push(
             `${tPdf("events.refs.prestamo", { defaultValue: "Préstamo" })}: #${
               r.id_registro_prestamo
-            }`
+            }`,
           );
         }
         if (r.id_categoria) {
           refParts.push(
             `${tPdf("events.refs.categoria", {
               defaultValue: "Categoría",
-            })}: #${r.id_categoria}`
+            })}: #${r.id_categoria}`,
           );
         }
         if (r.id_ubicacion) {
           refParts.push(
             `${tPdf("events.refs.ubicacion", {
               defaultValue: "Ubicación",
-            })}: #${r.id_ubicacion}`
+            })}: #${r.id_ubicacion}`,
+          );
+        }
+        if (r.id_usuario_interno) {
+          refParts.push(
+            `${tPdf("events.refs.internalUser", { defaultValue: "Usuario interno" })}: #${r.id_usuario_interno}`,
           );
         }
         const refsTxt = refParts.join(" · ");
@@ -413,7 +425,7 @@ router.get(
         effectiveRowHeight = Math.max(
           effectiveRowHeight,
           refsHeight + cellPadY * 2,
-          detHeight + cellPadY * 2
+          detHeight + cellPadY * 2,
         );
 
         if (idx % 2 === 1 && effectiveRowHeight !== rowMinHeight) {
@@ -474,7 +486,7 @@ router.get(
       console.error(error);
       return sendError(res, { status: 500, error: "errors.audit.pdfFailed" });
     }
-  }
+  },
 );
 
 /* Préstamos */
@@ -520,7 +532,7 @@ router.get(
       console.error(error);
       return sendError(res, { status: 500, error: "errors.audit.fetchFailed" });
     }
-  }
+  },
 );
 
 router.get(
@@ -560,7 +572,7 @@ router.get(
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        'inline; filename="reporte_prestamos.pdf"'
+        'inline; filename="reporte_prestamos.pdf"',
       );
 
       const doc = new PDFDocument({ margin: 40, size: "A4" });
@@ -573,18 +585,16 @@ router.get(
         }),
         {
           align: "center",
-        }
+        },
       );
 
       doc.moveDown(0.3);
-      doc
-        .fontSize(10)
-        .text(
-          `${tPdf("loans.pdf.generated", {
-            defaultValue: "Generado",
-          })}: ${new Date().toLocaleString(lang === "en" ? "en-US" : "es-CL")}`,
-          { align: "center" }
-        );
+      doc.fontSize(10).text(
+        `${tPdf("loans.pdf.generated", {
+          defaultValue: "Generado",
+        })}: ${new Date().toLocaleString(lang === "en" ? "en-US" : "es-CL")}`,
+        { align: "center" },
+      );
 
       doc.moveDown(0.5);
 
@@ -602,28 +612,28 @@ router.get(
 
       const isFreq = filtros.modo === "frecuencia";
 
-      // anchos exactos que SUMAN 515 (555 - 40)
       const widths = isFreq
         ? {
-            idOrFreq: 60, // Frecuencia
-            recurso: 105,
-            prestadoA: 100,
-            rut: 70,
-            prestamo: 55,
-            devol: 55,
-            venc: 70, // ← suficiente para fecha
+            idOrFreq: 55,
+            recurso: 95,
+            prestadoA: 90,
+            rut: 65,
+            prestamo: 50,
+            devol: 50,
+            venc: 55,
+            registradoPor: 70,
           }
         : {
-            idOrFreq: 35, // ID
-            recurso: 110,
-            prestadoA: 120,
-            rut: 80,
-            prestamo: 55,
-            devol: 55,
-            venc: 60,
+            idOrFreq: 30,
+            recurso: 100,
+            prestadoA: 95,
+            rut: 70,
+            prestamo: 50,
+            devol: 50,
+            venc: 50,
+            registradoPor: 90,
           };
 
-      // construcción EN CADENA (no se desarma nunca)
       let x = tableLeft;
       const COL2 = {
         idOrFreq: { x, w: widths.idOrFreq },
@@ -633,6 +643,7 @@ router.get(
         prestamo: { x: (x += widths.rut), w: widths.prestamo },
         devol: { x: (x += widths.prestamo), w: widths.devol },
         venc: { x: (x += widths.devol), w: widths.venc },
+        registradoPor: { x: (x += widths.venc), w: widths.registradoPor },
       };
 
       const colXs = [
@@ -643,6 +654,7 @@ router.get(
         COL2.prestamo.x,
         COL2.devol.x,
         COL2.venc.x,
+        COL2.registradoPor.x,
         tableRight,
       ];
 
@@ -660,49 +672,56 @@ router.get(
           : tPdf("loans.pdf.cols.id", { defaultValue: "ID" }),
         COL2.idOrFreq.x,
         yHead + cellPadY,
-        { width: COL2.idOrFreq.w, lineBreak: false, ellipsis: true }
+        { width: COL2.idOrFreq.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.resource", { defaultValue: "Recurso" }),
         COL2.recurso.x,
         yHead + cellPadY,
-        { width: COL2.recurso.w, lineBreak: false, ellipsis: true }
+        { width: COL2.recurso.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.loanedTo", { defaultValue: "Prestado a" }),
         COL2.prestadoA.x,
         yHead + cellPadY,
-        { width: COL2.prestadoA.w, lineBreak: false, ellipsis: true }
+        { width: COL2.prestadoA.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.rut", { defaultValue: "RUT" }),
         COL2.rut.x,
         yHead + cellPadY,
-        { width: COL2.rut.w, lineBreak: false, ellipsis: true }
+        { width: COL2.rut.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.loanDate", { defaultValue: "Préstamo" }),
         COL2.prestamo.x,
         yHead + cellPadY,
-        { width: COL2.prestamo.w, lineBreak: false, ellipsis: true }
+        { width: COL2.prestamo.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.returnDate", { defaultValue: "Devol." }),
         COL2.devol.x,
         yHead + cellPadY,
-        { width: COL2.devol.w, lineBreak: false, ellipsis: true }
+        { width: COL2.devol.w, lineBreak: false, ellipsis: true },
       );
 
       doc.text(
         tPdf("loans.pdf.cols.dueDate", { defaultValue: "Venc." }),
         COL2.venc.x,
         yHead + cellPadY,
-        { width: COL2.venc.w, lineBreak: false, ellipsis: true }
+        { width: COL2.venc.w, lineBreak: false, ellipsis: true },
+      );
+
+      doc.text(
+        tPdf("loans.pdf.cols.registeredBy", { defaultValue: "Registrado por" }),
+        COL2.registradoPor.x,
+        yHead + cellPadY,
+        { width: COL2.registradoPor.w, lineBreak: false, ellipsis: true },
       );
 
       doc.save();
@@ -751,19 +770,19 @@ router.get(
 
         const fPrestamo = r.fecha_prestamo
           ? new Date(r.fecha_prestamo).toLocaleDateString(
-              lang === "en" ? "en-US" : "es-CL"
+              lang === "en" ? "en-US" : "es-CL",
             )
           : "--";
 
         const fDev = r.fecha_devolucion
           ? new Date(r.fecha_devolucion).toLocaleDateString(
-              lang === "en" ? "en-US" : "es-CL"
+              lang === "en" ? "en-US" : "es-CL",
             )
           : "--";
 
         const fVenc = r.fecha_vencimiento
           ? new Date(r.fecha_vencimiento).toLocaleDateString(
-              lang === "en" ? "en-US" : "es-CL"
+              lang === "en" ? "en-US" : "es-CL",
             )
           : "--";
 
@@ -774,6 +793,7 @@ router.get(
 
         const prestadoATxt = String(r.prestado_a ?? "-");
         const rutTxt = String(r.rut_usuario ?? "-");
+        const registradoPorTxt = String(r.registrado_por ?? "-");
 
         const idOrFreqTxt = isFreq
           ? String(r.frecuencia ?? "")
@@ -795,7 +815,7 @@ router.get(
         effectiveRowHeight = Math.max(
           effectiveRowHeight,
           recursoH + cellPadY * 2,
-          prestadoH + cellPadY * 2
+          prestadoH + cellPadY * 2,
         );
 
         if (idx % 2 === 1 && effectiveRowHeight !== rowMinHeight) {
@@ -840,6 +860,11 @@ router.get(
           lineBreak: false,
           ellipsis: true,
         });
+        doc.text(registradoPorTxt, COL2.registradoPor.x, y + cellPadY, {
+          width: COL2.registradoPor.w,
+          lineBreak: false,
+          ellipsis: true,
+        });
 
         doc.save();
         doc.strokeColor("#e0d8ea").lineWidth(0.5);
@@ -867,7 +892,7 @@ router.get(
       console.error(error);
       return sendError(res, { status: 500, error: "errors.audit.pdfFailed" });
     }
-  }
+  },
 );
 
 module.exports = router;

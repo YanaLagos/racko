@@ -148,7 +148,7 @@ export default function ExternalUserModal({
           <>
             <div className="modal-form-grid">
               <div className="field">
-                <label>{t("users.create.fields.rut")}</label>
+                <label className="label-required">{t("users.create.fields.rut")}</label>
                 <input
                   className="input-modal-user"
                   value={rut}
@@ -164,7 +164,7 @@ export default function ExternalUserModal({
               </div>
 
               <div className="field">
-                <label>{t("users.create.fields.nombre")}</label>
+                <label className="label-required">{t("users.create.fields.nombre")}</label>
                 <input
                   className="input-modal-user"
                   value={nombre}
@@ -175,7 +175,7 @@ export default function ExternalUserModal({
               </div>
 
               <div className="field">
-                <label>{t("users.create.fields.apellido")}</label>
+                <label className="label-required">{t("users.create.fields.apellido")}</label>
                 <input
                   className="input-modal-user"
                   value={apellido}
@@ -186,7 +186,7 @@ export default function ExternalUserModal({
               </div>
 
               <div className="field">
-                <label>{t("users.create.fields.telefono")}</label>
+                <label className="label-required">{t("users.create.fields.telefono")}</label>
                 <input
                   className="input-modal-user"
                   value={telefono}
@@ -197,7 +197,7 @@ export default function ExternalUserModal({
               </div>
 
               <div className="field full">
-                <label>{t("users.create.fields.email")}</label>
+                <label className="label-required">{t("users.create.fields.email")}</label>
                 <input
                   className="input-modal-user"
                   value={email}
@@ -223,8 +223,8 @@ export default function ExternalUserModal({
                 />
               </div>
 
-              <div className="modal-form-hint field full">
-                {t("users.create.hint")}
+              <div className="modal-form-hint">
+                {t("common.requiredFieldsNote", "Campos obligatorios *")}
               </div>
             </div>
 

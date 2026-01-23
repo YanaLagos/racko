@@ -1,0 +1,236 @@
+/*WIDGET-VENCIMIENTO*/
+
+.widget {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--bg-main);
+  color: var(--text-secondary);
+
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.widget::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    800px 200px at 20% 0%,
+    rgba(255, 255, 255, 0.18),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.widget-icon {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  backdrop-filter: blur(6px);
+  color: #fff;
+}
+
+.widget-icon svg {
+  width: 35px;
+  height: 35px;
+}
+
+.widget-icon svg path {
+  fill: currentColor;
+}
+
+.widget-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.widget-title {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--text-secondary);
+}
+
+.widget-subtitle {
+  font-size: 0.92rem;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.widget-user,
+.widget-date {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.widget-date {
+  white-space: nowrap;
+}
+
+.widget-controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  margin-left: 8px;
+}
+
+.btn-widget {
+  width: 160px;
+  height: 35px;
+  border-radius: 999px;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-widget:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #fff;
+  transform: scale(0.97);
+}
+
+@media (max-width: 520px) {
+  .widget {
+    border-radius: 28px;
+    align-items: flex-start;
+  }
+  .widget-subtitle {
+    white-space: normal;
+  }
+}
+
+/* ===== Predictivo widget ===== */
+.predictivo-widget {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.predictivo-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.predictivo-card {
+  background: transparent;
+  padding: 18px;
+}
+
+.predictivo-pct {
+  position: absolute;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.predictivo-level {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.predictivo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-primary-light);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.predictivo-user-name {
+  display: inline;
+  cursor: pointer;
+  color: var(--color-btn);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.predictivo-user-name:hover,
+.predictivo-user-name:focus-visible {
+  text-decoration: underline;
+}
+
+.predictivo-user-name:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.predictivo-footnote {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== RING ===== */
+.predictivo-ring-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.predictivo-ring-center {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.predictivo-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.predictivo-ring-bg {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+.predictivo-ring-fg {
+  stroke: var(--color-secondary);
+  transition: stroke-dashoffset 300ms ease;
+}
+
+.predictivo-ring-text {
+  font-family: var(--font-main);
+  font-weight: 900;
+  fill: var(--text-main);
+  font-size: 18px;
+}
+
+.predictivo-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 10px 2px;
+}

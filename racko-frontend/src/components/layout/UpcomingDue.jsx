@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { upcomingDueApi } from "../../api/prestamos.api";
 import { useLocation } from "react-router-dom";
+import Bell from "../../assets/bell.svg?react";
 
 function formatFecha(fechaISO) {
   const d = new Date(fechaISO);
@@ -45,8 +46,6 @@ export default function UpcomingDue() {
     async function load() {
       try {
         const resp = await upcomingDueApi();
-
-        // soporta axios o respuesta plana
         const payload = resp?.data ?? resp;
 
         let list = [];
@@ -75,7 +74,6 @@ export default function UpcomingDue() {
     };
   }, []);
 
-  // ROTACIÓN: si hay más de 1, rota cada 8s
   useEffect(() => {
     if (items.length <= 1) return;
 
@@ -114,7 +112,9 @@ export default function UpcomingDue() {
 
   return (
     <div className="widget" aria-label={t("dashboard.widget.upcomingDueAria")}>
-      <div className="widget-icon"></div>
+      <div className="widget-icon">
+        <Bell className="widget-icon-svg" />
+      </div>
 
       <div className="widget-content">
         <div className="widget-title">

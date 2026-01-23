@@ -10,6 +10,7 @@ import {
 } from "../../api/ubicacion.api";
 
 import EditIcon from "../../assets/edit.svg?react";
+import Location from "../../assets/location.svg?react";
 
 function cleanStr(v) {
   const s = (v ?? "").toString().trim();
@@ -32,6 +33,7 @@ export default function UbicacionSection() {
   const [openConfirmDeactivate, setOpenConfirmDeactivate] = useState(false);
 
   const [saving, setSaving] = useState(false);
+  const [originalForm, setOriginalForm] = useState(null);
   const [formErrorKey, setFormErrorKey] = useState("");
 
   const [form, setForm] = useState({
@@ -87,13 +89,29 @@ export default function UbicacionSection() {
 
   function openEditModal(u) {
     setFormErrorKey("");
-    setForm({
+
+    const base = {
       id_ubicacion: u.id_ubicacion,
       nombre: u.nombre || "",
       descripcion: u.descripcion || "",
       estado: u.estado ?? 1,
-    });
+    };
+
+    setForm(base);
+    setOriginalForm(base);
     setOpenEdit(true);
+  }
+
+  function goConfirmCreate() {
+    const nombre = cleanStr(form.nombre);
+
+    if (!nombre) {
+      setFormErrorKey("errors.validation.requiredFields");
+      return;
+    }
+
+    setFormErrorKey("");
+    setConfirmCreate(true);
   }
 
   async function handleCreate() {
@@ -135,6 +153,15 @@ export default function UbicacionSection() {
     const id = Number(form.id_ubicacion);
     const nombre = cleanStr(form.nombre);
     const descripcion = cleanStr(form.descripcion);
+    const origNombre = cleanStr(originalForm?.nombre);
+    const origDesc = cleanStr(originalForm?.descripcion);
+
+    const noChanges = nombre === origNombre && descripcion === origDesc;
+
+    if (noChanges) {
+      setFormErrorKey("errors.validation.noChanges");
+      return;
+    }
 
     if (!id || !nombre) {
       setFormErrorKey("errors.validation.requiredFields");
@@ -223,10 +250,8 @@ export default function UbicacionSection() {
         <section className="loc-list">
           {ubicaciones.map((loc) => (
             <article key={loc.id_ubicacion} className="loc-row">
-
               <div className="loc-left">
-                <span className="loc-icon">📍</span>
-
+                <Location className="loc-flag-svg" />
                 <div className="loc-text">
                   <div className="loc-name">{loc.nombre}</div>
                   {loc.descripcion && (
@@ -238,12 +263,12 @@ export default function UbicacionSection() {
               {isAdmin && (
                 <button
                   type="button"
-                  className="res-card-edit"
+                  className="loc-iconbtn"
                   onClick={() => openEditModal(loc)}
                   title={t("assets.location.actions.edit", "Modificar")}
                   aria-label={t("assets.location.actions.edit", "Modificar")}
                 >
-                  <EditIcon className="res-card-edit-icon" />
+                  <EditIcon className="loc-icon-svg" />
                 </button>
               )}
             </article>
@@ -275,7 +300,9 @@ export default function UbicacionSection() {
             {!confirmCreate && (
               <>
                 <div className="field">
-                  <label>{t("assets.location.fields.name", "Nombre")}</label>
+                  <label className="label-required">
+                    {t("assets.location.fields.name", "Nombre")}
+                  </label>
                   <input
                     className="input"
                     value={form.nombre}
@@ -301,7 +328,9 @@ export default function UbicacionSection() {
                     disabled={saving}
                   />
                 </div>
-
+                <div className="modal-form-hint">
+                  {t("common.requiredFieldsNote", "Campos obligatorios *")}
+                </div>
                 <div className="modal-actions" style={{ marginTop: 16 }}>
                   <button
                     className="btn-modal-cancel"
@@ -314,7 +343,7 @@ export default function UbicacionSection() {
                   <button
                     className="btn-modal-primary"
                     type="button"
-                    onClick={() => setConfirmCreate(true)}
+                    onClick={goConfirmCreate}
                     disabled={saving}
                   >
                     {t("common.continue", "Continuar")}
@@ -360,7 +389,10 @@ export default function UbicacionSection() {
                   <button
                     className="btn-modal-cancel"
                     type="button"
-                    onClick={() => setConfirmCreate(false)}
+                    onClick={() => {
+                      setConfirmCreate(false);
+                      setFormErrorKey("");
+                    }}
                     disabled={saving}
                   >
                     {t("common.back", "Volver a editar")}
@@ -384,7 +416,12 @@ export default function UbicacionSection() {
       {openEdit && (
         <div
           className="modal-backdrop"
-          onMouseDown={() => !saving && setOpenEdit(false)}
+          onMouseDown={() => {
+            if (saving) return;
+            setOpenEdit(false);
+            setOriginalForm(null);
+            setFormErrorKey("");
+          }}
           role="presentation"
         >
           <div
@@ -437,7 +474,11 @@ export default function UbicacionSection() {
               <button
                 className="btn-modal-cancel"
                 type="button"
-                onClick={() => setOpenEdit(false)}
+                onClick={() => {
+                  setOpenEdit(false);
+                  setOriginalForm(null);
+                  setFormErrorKey("");
+                }}
                 disabled={saving}
               >
                 {t("common.cancel", "Cancelar")}

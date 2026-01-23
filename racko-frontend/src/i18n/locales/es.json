@@ -62,6 +62,7 @@
     "desc": "Descendente",
     "edit": "Editar",
     "select": "Selecciona una opción",
+    "requiredFieldsNote": "Campos obligatorios *",
     "lang": {
       "es": "Español",
       "en": "Inglés"
@@ -114,7 +115,7 @@
     "title": "Activos",
     "categories": "Categorías",
     "createdBy": "Creado por",
-    "deactiveHint": "Al desactivar la categoría, dejará de estar disponible para nuevos recursos. Esta acción se puede revertir.",
+    "deactivateHint": "Al desactivar la categoría, dejará de estar disponible para nuevos recursos.",
     "categoriesFailed": "No se pudieron cargar las categorías",
     "categoriesEmpty": "Sin categorías disponibles",
     "editBlocked": "No se puede editar: recurso prestado",
@@ -159,6 +160,7 @@
       "loan": "Prestar/Devolver",
       "continue": "Continuar",
       "confirmCreation": "¿Confirmas crear la categoría?",
+      "createCategory": "Crear categoría",
       "register": "Registrar"
     },
 
@@ -195,7 +197,7 @@
       "prefix": "Nombre / Prefijo",
       "prefixHint": "Si creas varios, se numerarán como 'Guitarra01, Guitarra02...'",
       "quantity": "Cantidad",
-      "descLater": "Ingresar descripción más tarde",
+      "descLater": "Ingresar descripción más tarde (individual)",
       "descHint": "Si no marcas esto, se guardará la misma descripción para todos los recursos creados.",
       "location": "Ubicación",
       "description": "Descripción",
@@ -261,7 +263,7 @@
       "loanCreated": "Préstamo registrado",
       "loanUpdated": "Préstamo actualizado",
       "loanReturned": "Préstamo devuelto",
-      "observationUpdated": "Observaciones actualizadas",
+      "observationsUpdated": "Observaciones actualizadas",
       "categoryCreated": "Categoría creada",
       "categoryUpdated": "Categoría actualizada",
       "categoryDeactivated": "Categoría desactivada",
@@ -407,7 +409,6 @@
       "subtitle": "Ingresa los datos del nuevo usuario.",
       "confirmSubtitle": "Revisa la información antes de guardar.",
       "inviteHint": "Se enviará un correo para que el usuario defina su contraseña.",
-      "hint": "RUT, Nombre, Apellido, Email y Teléfono son obligatorios*",
       "fields": {
         "rut": "RUT del usuario",
         "rutPh": "Ej: 12569899-0",
@@ -464,7 +465,9 @@
       "internalUserPh": "Nombre o apellido",
       "refType": "Ref. tipo",
       "refValue": "Ref. valor",
-      "refValuePh": "Id, nombre o RUT"
+      "refValuePh": "Id, nombre o RUT",
+      "refValueExternalPh": "RUT o nombre/apellido",
+      "refValueDisabledPh": "Selecciona un tipo"
     },
     "actions": {
       "query": "Consultar",
@@ -476,18 +479,50 @@
       "datetime": "Fecha/Hora",
       "type": "Tipo",
       "internalUser": "Usuario interno",
-      "reftype": "Ref. tipo",
+      "refType": "Ref. tipo",
       "refValue": "Ref. valor",
       "detail": "Detalle"
+    },
+    "ref": {
+      "resource": "Recurso",
+      "category": "Categoría",
+      "location": "Ubicación",
+      "external": "Externo",
+      "internalUser": "Interno",
+      "loan": "Préstamo",
+      "unknown": "Desconocido"
     },
     "table": {
       "unknownUser": "(sin usuario)",
       "empty": "No hay registros para mostrar.",
       "total": "Total",
       "pagination": {
-        "pageOf": "Página ${page} de ${totalPages}",
+        "pageOf": "Página {{page}} de {{totalPages}}",
         "prev": "Anterior",
         "next": "Siguiente"
+      }
+    },
+    "sort": {
+      "mostRecent": "Más reciente",
+      "older": "Más antiguo"
+    }
+  },
+
+  "loans": {
+    "pdf": {
+      "title": "Reporte de préstamos - Racko",
+      "generated": "Generado",
+      "empty": "Sin registros",
+      "cols": {
+        "frequency": "Frecuencia",
+        "id": "ID",
+        "resource": "Recurso",
+        "loanedTo": "Prestado a",
+        "rut": "RUT",
+        "loanDate": "Préstamo",
+        "returnDate": "Devol.",
+        "dueDate": "Venc.",
+        "registeredBy": "Registrado por"
       }
     }
   },
@@ -559,8 +594,14 @@
       "invalidLoanId": "Id de préstamo inválido",
       "invalidForeignKey": "Key inválida",
       "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
-      "duplicateEntry": "Entrada duplicada"
+      "duplicateEntry": "Entrada duplicada",
+      "noChanges": "No hay cambios para guardar"
     },
+
+    "required": {
+      "name": "El nombre es obligatorio"
+    },
+
     "auth": {
       "invalidCredentials": "Credenciales incorrectas",
       "invalidToken": "Token inválido",

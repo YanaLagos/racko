@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { initResize } from "../../utils/tableResize";
+
 import {
   listarAuditoriasPrestamosApi,
   abrirReportePrestamosPdf,
   actualizarObservacionesPrestamoApi,
 } from "../../api/Auditorias.api";
+
+import CloseIcon from "../../assets/close-icon.svg?react";
 
 function formatDateCL(dt) {
   if (!dt) return "--";
@@ -98,29 +102,30 @@ export default function Auditorias() {
     return base;
   }, [usuario, rut, recurso, dia, desde, hasta, modo, sort]);
 
-  // FUNCIÓN PARA REDIMENSIONAR COLUMNAS
-  const initResize = (e) => {
-    const th = e.target.parentElement;
-    const startX = e.pageX;
-    const startWidth = th.offsetWidth;
+  const [reportLoading, setReportLoading] = useState(false);
 
-    const onMouseMove = (moveEvent) => {
-      const currentWidth = startWidth + (moveEvent.pageX - startX);
-      if (currentWidth > 60) {
-        th.style.width = `${currentWidth}px`;
-      }
-    };
+  async function generarReporte() {
+    if (reportLoading) return;
 
-    const onMouseUp = () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-      document.body.style.cursor = "default";
-    };
+    try {
+      setReportLoading(true);
+      setErrorKey("");
 
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-    document.body.style.cursor = "col-resize";
-  };
+      await abrirReportePrestamosPdf({
+        ...paramsBase,
+        page: undefined,
+      });
+    } catch (e) {
+      const key =
+        e?.response?.data?.error ||
+        e?.response?.data?.message ||
+        "errors.audit.reportFailed";
+
+      setErrorKey(key);
+    } finally {
+      setReportLoading(false);
+    }
+  }
 
   async function consultar(targetPage = page) {
     try {
@@ -248,13 +253,6 @@ export default function Auditorias() {
     }
   }
 
-  function generarReporte() {
-    abrirReportePrestamosPdf({
-      ...paramsBase,
-      page: undefined,
-    });
-  }
-
   const total = meta?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const canPrev = page > 1;
@@ -378,7 +376,7 @@ export default function Auditorias() {
                 type="button"
                 className="audit-btn audit-btn-secondary"
                 onClick={generarReporte}
-                disabled={loading}
+                disabled={loading || reportLoading}
               >
                 {t("audits.actions.report")}
               </button>
@@ -391,16 +389,15 @@ export default function Auditorias() {
           )}
         </div>
       </div>
-      {/* CONTENEDOR DE TABLA */}
+      {/* TABLA */}
       <div className="audit-table-wrap">
         <table
           className="audit-table"
-          style={{ tableLayout: "fixed", width: "100%", minWidth: "100%" }}
         >
           <thead>
             <tr>
               <th
-                style={{ width: modo === "frecuencia" ? "100px" : "100px" }}
+                style={{ width: modo === "frecuencia" ? "80px" : "80px" }}
                 onClick={() =>
                   toggleSort(
                     modo === "frecuencia" ? "frecuencia" : "id_prestamo",
@@ -413,14 +410,14 @@ export default function Auditorias() {
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "200px" }}
+                style={{ width: "100px" }}
                 onClick={() => toggleSort("nombre_recurso")}
               >
                 {t("audits.cols.resource")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "180px" }}
+                style={{ width: "160px" }}
                 onClick={() => toggleSort("prestado_a")}
               >
                 {t("audits.cols.loanedTo")}
@@ -434,34 +431,34 @@ export default function Auditorias() {
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "150px" }}
+                style={{ width: "120px" }}
                 onClick={() => toggleSort("fecha_prestamo")}
               >
                 {t("audits.cols.loanDate")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "150px" }}
+                style={{ width: "120px" }}
                 onClick={() => toggleSort("fecha_devolucion")}
               >
                 {t("audits.cols.returnDate")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "150px" }}
+                style={{ width: "120px" }}
                 onClick={() => toggleSort("fecha_vencimiento")}
               >
                 {t("audits.cols.dueDate")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
               <th
-                style={{ width: "150px" }}
+                style={{ width: "120px" }}
                 onClick={() => toggleSort("registrado_por")}
               >
                 {t("audits.cols.registeredBy")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
-              <th style={{ width: "250px" }}>
+              <th style={{ width: "200px" }}>
                 {t("audits.cols.observations")}
                 <div className="resizer" onMouseDown={initResize} />
               </th>
@@ -471,17 +468,17 @@ export default function Auditorias() {
           <tbody>
             {rows.map((r) => {
               const estado = getEstadoPrestamo(r);
-              const recursoLabel =
-                modo === "frecuencia" && r.frecuencia != null
-                  ? `${r.nombre_recurso || "--"} (${r.frecuencia})`
-                  : r.nombre_recurso || "--";
 
               return (
                 <tr
-                  key={r.id_prestamo}
+                  key={modo === "frecuencia" ? r.id_recurso : r.id_prestamo}
                   className={`audit-row audit-row--${estado}`}
                 >
-                  <td>{r.id_prestamo}</td>
+                  <td>
+                    {modo === "frecuencia"
+                      ? (r.frecuencia ?? "--")
+                      : (r.id_prestamo ?? "--")}
+                  </td>
                   <td>{r.nombre_recurso}</td>
                   <td>{r.prestado_a || "--"}</td>
                   <td>{r.rut_usuario || "--"}</td>
@@ -516,7 +513,7 @@ export default function Auditorias() {
           </tbody>
         </table>
       </div>{" "}
-      {/* ✅ MODAL OBSERVACIONES */}
+      {/* MODAL OBSERVACIONES */}
       {obsOpen && (
         <div
           className="modal-backdrop"
@@ -532,20 +529,20 @@ export default function Auditorias() {
           >
             <div className="modal-header">
               <h2 className="modal-title">
-                {t("audits.table.obsModalTitle", {
+                {t("audits.table.editObs", {
                   id: obsRow?.id_prestamo ?? "--",
                 })}
               </h2>
 
               <button
                 type="button"
-                className="modal-close"
+                className="obs-close-icon"
                 onClick={closeObsModal}
                 disabled={obsSaving}
                 aria-label={t("common.close")}
                 title={t("common.close")}
               >
-                ✕
+                <CloseIcon className="res-card-edit-icon" />
               </button>
             </div>
 
@@ -571,7 +568,7 @@ export default function Auditorias() {
             <div className="modal-actions">
               <button
                 type="button"
-                className="modal-btn-cancel"
+                className="btn-modal-cancel"
                 onClick={closeObsModal}
                 disabled={obsSaving}
               >

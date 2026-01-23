@@ -33,7 +33,7 @@ async function registrarEvento(
 
     detalle_key = null,
     detalle_meta = null,
-  }
+  },
 ) {
   const finalDetalle = detalle_key
     ? encodeDetalle(detalle_key, detalle_meta || {})
@@ -88,7 +88,7 @@ function buildWhere(filtros = {}) {
 
   if (usuario) {
     where.push(
-      "(LOWER(u.nombre) LIKE ? OR LOWER(u.apellido) LIKE ? OR LOWER(CONCAT(u.nombre,' ',u.apellido)) LIKE ?)"
+      "(LOWER(u.nombre) LIKE ? OR LOWER(u.apellido) LIKE ? OR LOWER(CONCAT(u.nombre,' ',u.apellido)) LIKE ?)",
     );
     const term = `%${String(usuario).toLowerCase()}%`;
     params.push(term, term, term);
@@ -187,7 +187,22 @@ function buildWhere(filtros = {}) {
         params.push(rutNorm);
       } else {
         where.push(
-          "(LOWER(ue.nombre) LIKE ? OR LOWER(ue.apellido) LIKE ? OR LOWER(CONCAT(ue.nombre,' ',ue.apellido)) LIKE ?)"
+          "(LOWER(ue.nombre) LIKE ? OR LOWER(ue.apellido) LIKE ? OR LOWER(CONCAT(ue.nombre,' ',ue.apellido)) LIKE ?)",
+        );
+        const term = `%${refTrim.toLowerCase()}%`;
+        params.push(term, term, term);
+      }
+    }
+    if (ref_tipo === "usuario_interno") {
+      const refTrim = String(ref).trim();
+      const isDigitsOnly = /^\d+$/.test(refTrim);
+
+      if (isDigitsOnly) {
+        where.push("a.id_usuario_interno = ?");
+        params.push(Number(refTrim));
+      } else {
+        where.push(
+          "(LOWER(u.nombre) LIKE ? OR LOWER(u.apellido) LIKE ? OR LOWER(CONCAT(u.nombre,' ',u.apellido)) LIKE ?)",
         );
         const term = `%${refTrim.toLowerCase()}%`;
         params.push(term, term, term);
@@ -239,6 +254,34 @@ async function listarMovimientos({
       ub.nombre AS nombre_ubicacion,
 
       a.detalle
+      ,
+      CASE
+        WHEN a.id_usuario_interno IS NOT NULL THEN 'usuario_interno'
+        WHEN a.id_recurso IS NOT NULL THEN 'recurso'
+        WHEN a.id_categoria IS NOT NULL THEN 'categoria'
+        WHEN a.id_ubicacion IS NOT NULL THEN 'ubicacion'
+        WHEN a.rut_usuario_externo IS NOT NULL THEN 'externo'
+        WHEN a.id_registro_prestamo IS NOT NULL THEN 'prestamo'
+        ELSE NULL
+      END AS ref_tipo,
+
+      CASE
+        WHEN a.id_usuario_interno IS NOT NULL THEN a.id_usuario_interno
+        WHEN a.id_recurso IS NOT NULL THEN a.id_recurso
+        WHEN a.id_categoria IS NOT NULL THEN a.id_categoria
+        WHEN a.id_ubicacion IS NOT NULL THEN a.id_ubicacion
+        WHEN a.id_registro_prestamo IS NOT NULL THEN a.id_registro_prestamo
+        ELSE NULL
+      END AS ref_id,
+
+      CASE
+        WHEN a.id_usuario_interno IS NOT NULL THEN TRIM(CONCAT(u.nombre, ' ', u.apellido))
+        WHEN a.id_recurso IS NOT NULL THEN r.nombre
+        WHEN a.id_categoria IS NOT NULL THEN c.nombre
+        WHEN a.id_ubicacion IS NOT NULL THEN ub.nombre
+        WHEN a.rut_usuario_externo IS NOT NULL THEN TRIM(CONCAT(ue.nombre, ' ', ue.apellido))
+        ELSE NULL
+      END AS ref_nombre
     FROM auditoria_evento a
     LEFT JOIN usuario_interno u ON u.id_usuario = a.id_usuario_interno
     LEFT JOIN recurso_fisico r ON r.id_recurso = a.id_recurso

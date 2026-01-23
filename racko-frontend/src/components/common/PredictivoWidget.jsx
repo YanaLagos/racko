@@ -55,13 +55,12 @@ export default function PredictivoWidget() {
         let list = [];
         if (Array.isArray(payload)) list = payload;
         else if (Array.isArray(payload?.data))
-          list = payload.data; // <- MUY común
+          list = payload.data; 
         else if (payload?.ok && Array.isArray(payload?.data))
           list = payload.data;
         else if (payload?.data?.ok && Array.isArray(payload?.data?.data))
           list = payload.data.data;
 
-        // normaliza + (opcional) filtra BAJO si por contrato no se muestra
         const normalized = list.map(normalizeItem).filter((u) => {
           const lvl = String(u._nivel).toUpperCase();
           return lvl === "MEDIO" || lvl === "ALTO";

@@ -1,25 +1,262 @@
 {
   "common": {
-    "cancel": "Cancelar",
-    "confirm": "Confirmar"
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "loading": "Loading",
+    "searching": "Searching",
+    "search": "Search",
+    "viewMore": "View more",
+    "yes": "Yes",
+    "no": "No",
+    "query": "Query",
+    "asc": "Ascending",
+    "desc": "Descending",
+    "edit": "Edit",
+    "lang": {
+      "es": "Spanish",
+      "en": "English"
+    }
   },
 
   "audits": {
-    "unknown": "Desconocido"
+    "internalUsers": {
+      "created": "Internal user created with email {{email}} and role {{rol}}",
+      "activated": "User account activated (ID {{id_usuario_afectado}})",
+      "deactivated": "User account deactivated (ID {{id_usuario_afectado}})",
+      "updated": "Internal user updated (ID {{id_usuario_afectado}}). Changes: {{cambios}}. Email: {{email}}",
+      "inviteSent": "Invitation resent to set password to {{email}} (ID {{id_usuario_afectado}})."
+    },
+
+    "externalUsers": {
+      "created": "External user registered",
+      "updated": "External user updated",
+      "deactivated": "External user deactivated",
+      "activated": "External user activated",
+      "reputationUpdated": "User reputation updated",
+      "rutChanged": "User RUT updated"
+    },
+
+    "assets": {
+      "loanCreated": "Loan registered",
+      "loanUpdated": "Loan updated",
+      "loanReturned": "Loan returned",
+      "observationsUpdated": "Observations updated",
+      "categoryCreated": "Category created",
+      "categoryUpdated": "Category updated",
+      "categoryDeactivated": "Category deactivated",
+      "categoriaActivated": "Category activated",
+      "locationCreated": "Location created",
+      "locationUpdated": "Location updated",
+      "locationDeactivated": "Location deactivated",
+      "locationActivated": "Location activated",
+      "resourceCreated": "Resource created",
+      "resourceUpdated": "Resource updated",
+      "resourseDeactivated": "Resource deactivated",
+      "resourceActivated": "Resource activated"
+    },
+
+    "events": {
+      "noUser": "(no user)",
+
+      "pdf": {
+        "title": "Event report - Racko",
+        "generated": "Generated",
+
+        "cols": {
+          "date": "Date",
+          "type": "Type",
+          "user": "User",
+          "refs": "Refs",
+          "detail": "Detail"
+        },
+
+        "type": {
+          "CREACION": "Creation",
+          "ACTUALIZACION": "Update",
+          "DESACTIVACION": "Deactivation"
+        },
+
+        "refs": {
+          "externo": "External",
+          "recurso": "Resource",
+          "prestamo": "Loan",
+          "categoria": "Category",
+          "ubicacion": "Location"
+        }
+      }
+    }
   },
 
-  "events": {
+  "loans": {
     "pdf": {
-      "title": "Reporte de eventos - Racko",
-      "generated": "Generado",
+      "title": "Loan report - Racko",
+      "generated": "Generated",
+      "filtersSummary": "Filters",
       "cols": {
-        "date": "Fecha",
-        "type": "Tipo",
-        "user": "Usuario",
-        "refs": "Refs",
-        "detail": "Detalle"
+        "id": "ID",
+        "resource": "Resource",
+        "loanedTo": "Loaned to",
+        "rut": "RUT",
+        "loanDate": "Loan date",
+        "returnDate": "Return date",
+        "dueDate": "Due",
+        "frequency": "Frequency"
       },
-      "noUser": "(sin usuario)"
+      "empty": "No records"
+    }
+  },
+
+  "success": {
+    "ok": {
+      "internalUserCreated": "Administrator user created"
+    },
+    "internalUsers": {
+      "fetched": "Internal users loaded successfully",
+      "created": "Internal user created",
+      "activated": "User activated",
+      "deactivated": "User deactivated",
+      "updated": "User updated.",
+      "inviteSent": "Invitation sent.",
+      "languageUpdated": "Language updated"
+    },
+
+    "externalUsers": {
+      "created": "External user created",
+      "updated": "External user updated",
+      "deactivated": "External user deactivated",
+      "activated": "External user activated",
+      "fetched": "Users loaded"
+    },
+
+    "categories": {
+      "created": "Category created",
+      "updated": "Category updated"
+    },
+
+    "loans": {
+      "registered": "Loan registered",
+      "returned": "Loan returned",
+      "observationUpdated": "Observations updated",
+      "historyFetched": "History loaded successfully",
+      "upcomingDueFetched": "Due date loaded"
+    },
+
+    "resources": {
+      "fetched": "Resources loaded",
+      "created": "Resource created",
+      "updated": "Resource updated",
+      "activated": "Resource activated",
+      "deactivated": "Resource deactivated"
+    },
+
+    "locations": {
+      "fetched": "Location loaded",
+      "created": "Location created",
+      "updated": "Location updated"
+    },
+
+    "auth": {
+      "loginOk": "Signed in successfully",
+      "resetRequested": "An email has been sent to reset the password",
+      "passwordUpdated": "Password updated successfully"
+    }
+  },
+
+  "errors": {
+    "server": {
+      "internal": "Internal server error"
+    },
+    "validation": {
+      "requiredFields": "Missing required fields",
+      "invalidId": "Invalid ID",
+      "invalidState": "Invalid status",
+      "invalidLanguage": "Invalid language",
+      "invalidEmail": "Invalid email address",
+      "invalidRut": "Invalid RUT",
+      "invalidResourceId": "Invalid resource ID",
+      "invalidDueDate": "Invalid due date",
+      "invalidObservations": "Invalid observations",
+      "invalidLoanId": "Invalid loan ID",
+      "invalidForeignKey": "Invalid key",
+      "passwordTooShort": "Password must be at least 6 characters.",
+      "duplicateEntry": "Duplicate entry"
+    },
+    "auth": {
+      "invalidCredentials": "Invalid credentials",
+      "invalidToken": "Invalid token",
+      "missingToken": "Token not provided"
+    },
+    "internalUsers": {
+      "fetchFailed": "Could not load internal users",
+      "profileFetchFailed": "Could not load profile",
+      "languageUpdateFailed": "Could not update language",
+      "stateUpdateFailed": "Could not update status",
+      "cannotDeactivateSelf": "You cannot deactivate your own user",
+      "notFound": "Internal user not found",
+      "usernameAlreadyExists": "Username already exists",
+      "updateFailed": "Could not update user.",
+      "emailAlreadyExists": "Email already exists",
+      "inviteFailed": "Could not send invitation.",
+      "inactiveUser": "Cannot invite an inactive user."
+    },
+
+    "externalUsers": {
+      "fetchFailed": "Could not load user",
+      "notFound": "External user not found",
+      "rutalreadyExists": "The entered RUT already exists",
+      "createFailed": "Could not create external user",
+      "updateFailed": "Could not update external user",
+      "stateUpdateFailed": "Could not activate/deactivate external user",
+      "notFounfMsg": "User does not exist. Do you want to register them?"
+    },
+    "email": {
+      "sendFailed": "Could not send email."
+    },
+
+    "categories": {
+      "alreadyExists": "Category already exists",
+      "createdFailed": "There was an error creating the category",
+      "notFound": "Category not found",
+      "updateFailed": "There was an error updating",
+      "activated": "Category activated",
+      "deactivated": "Category deactivated",
+      "stateUpdateFailed": "Could not activate/deactivate the category"
+    },
+
+    "resources": {
+      "notFound": "Resource not found",
+      "alreadyLoaned": "Resource already loaned",
+      "fetchFailed": "Error loading resources",
+      "alreadyExists": "Resource already exists",
+      "createfailed": "Could not create resource",
+      "updateFailed": "Could not update resource",
+      "stateUpdateFailed": "Could not activate/deactivate resource"
+    },
+
+    "loans": {
+      "notFound": "Loan not found",
+      "alreadyReturned": "The loan has already been returned"
+    },
+
+    "locations": {
+      "fetcheFailed": "Could not load location",
+      "alreadyExists": "Location already exists",
+      "createFailed": "Could not create location",
+      "notFound": "Location not found",
+      "updateFailed": "There was an error updating",
+      "activated": "Location activated",
+      "deactivated": "Location deactivated",
+      "stateUpdateFailed": "Could not update status"
+    },
+
+    "reports": {
+      "fetchedFailed": "Data could not be loaded"
+    },
+
+    "audit": {
+      "pdfFailed": "Could not export PDF"
     }
   }
 }
+
