@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PDFDocument = require("pdfkit");
 const i18next = require("i18next");
+const db = require("../config/db");
 
 const {
   verificarToken,
@@ -144,25 +145,17 @@ function human(v) {
   return String(v);
 }
 
-function formatDateCLShort(dt) {
-  if (!dt) return "—";
-  const d = new Date(dt);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("es-CL");
-}
+function parseDetalleParams(detalleStr) {
+  const out = {};
+  const s = String(detalleStr || "");
+  if (!s.includes("|")) return out;
 
-function buildResumenFiltrosPrestamos(filtros, sortKey, sortDir) {
-  const parts = [
-    `Modo: ${human(filtros?.modo)}`,
-    `Usuario: ${human(filtros?.usuario)}`,
-    `RUT: ${human(filtros?.rut)}`,
-    `Recurso: ${human(filtros?.recurso)}`,
-    `Día: ${human(filtros?.dia)}`,
-    `Desde: ${human(filtros?.desde)}`,
-    `Hasta: ${human(filtros?.hasta)}`,
-    `Orden: ${human(sortKey)} ${human(sortDir)}`,
-  ];
-  return parts.join(" | ");
+  const [, ...paramsRaw] = s.split("|");
+  for (const p of paramsRaw) {
+    const [k, v] = p.split("=");
+    if (k && v) out[String(k).trim()] = String(v).trim();
+  }
+  return out;
 }
 
 /* Movimientos */
@@ -336,6 +329,48 @@ router.get(
 
       doc.y = yHead - 2 + rowMinHeight;
 
+      const targetIds = [];
+
+      for (const r of rows) {
+        const hasOtherRef =
+          r.rut_usuario_externo ||
+          r.id_recurso ||
+          r.id_registro_prestamo ||
+          r.id_categoria ||
+          r.id_ubicacion;
+
+        if (hasOtherRef) continue;
+
+        const p = parseDetalleParams(r.detalle);
+
+        const legacyId = p.id_usuario_afectado || p.id_usuario_creado || null;
+
+        const tidRaw = String(p.target_id ?? legacyId ?? "").trim();
+        if (!tidRaw.length) continue;
+
+        const n = Number(tidRaw);
+        if (Number.isFinite(n)) targetIds.push(n);
+      }
+
+      const uniqTargetIds = [...new Set(targetIds)];
+      let targetNameMap = new Map();
+
+      if (uniqTargetIds.length) {
+        const [urows] = await db.query(
+          `SELECT id_usuario, nombre, apellido
+     FROM usuario_interno
+     WHERE id_usuario IN (${uniqTargetIds.map(() => "?").join(",")})`,
+          uniqTargetIds,
+        );
+
+        targetNameMap = new Map(
+          urows.map((u) => [
+            Number(u.id_usuario),
+            `${u.nombre} ${u.apellido || ""}`.trim(),
+          ]),
+        );
+      }
+
       for (let idx = 0; idx < rows.length; idx++) {
         const r = rows[idx];
         const y = doc.y;
@@ -399,11 +434,29 @@ router.get(
             })}: #${r.id_ubicacion}`,
           );
         }
-        if (r.id_usuario_interno) {
-          refParts.push(
-            `${tPdf("events.refs.internalUser", { defaultValue: "Usuario interno" })}: #${r.id_usuario_interno}`,
-          );
+
+        if (refParts.length === 0) {
+          const p = parseDetalleParams(r.detalle);
+
+          const legacyId = p.id_usuario_afectado || p.id_usuario_creado || null;
+
+          const tt = String(p.target_tipo || "").toLowerCase();
+          const tidRaw = String(p.target_id ?? legacyId ?? "").trim();
+          const tid = tidRaw.length ? Number(tidRaw) : NaN;
+
+          if (Number.isFinite(tid) && (tt === "usuario_interno" || legacyId)) {
+            const nameFromDetalle =
+              `${p.target_nombre || ""} ${p.target_apellido || ""}`.trim();
+
+            const nameFromDb = targetNameMap.get(tid) || "";
+            const name = nameFromDetalle || nameFromDb;
+
+            refParts.push(
+              `${tPdf("events.refs.internalUser", { defaultValue: "Usuario interno" })}: #${tid}${name ? ` · ${name}` : ""}`,
+            );
+          }
         }
+
         const refsTxt = refParts.join(" · ");
 
         const detalleTxt = parseDetalleForPdf(r.detalle, tPdf);

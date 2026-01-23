@@ -57,6 +57,40 @@ async function registrarEvento(
   ]);
 }
 
+function parseDetalleParams(detalleStr) {
+  const out = {};
+  const s = String(detalleStr || "");
+  if (!s.includes("|")) return out;
+
+  const [, ...paramsRaw] = s.split("|");
+  for (const p of paramsRaw) {
+    const [k, v] = p.split("=");
+    if (k && v) out[String(k).trim()] = String(v).trim();
+  }
+  return out;
+}
+
+function getAffectedInternalUserIdFromDetalle(detalleStr) {
+  const p = parseDetalleParams(detalleStr);
+  const tt = String(p.target_tipo || "").toLowerCase();
+  if (tt !== "usuario_interno") return null;
+
+  const legacyId = p.id_usuario_afectado || p.id_usuario_creado || null;
+  const raw = String(p.target_id ?? legacyId ?? "").trim();
+  if (!raw.length) return null;
+
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
+function getAffectedInternalUserNameFromDetalle(detalleStr) {
+  const p = parseDetalleParams(detalleStr);
+  const nombre = String(p.target_nombre || "").trim();
+  const apellido = String(p.target_apellido || "").trim();
+  const full = `${nombre} ${apellido}`.trim();
+  return full.length ? full : null;
+}
+
 function buildWhere(filtros = {}) {
   const {
     tipo_evento,
@@ -81,6 +115,7 @@ function buildWhere(filtros = {}) {
     where.push("a.tipo_evento = ?");
     params.push(tipo_evento);
   }
+
   if (id_usuario_interno) {
     where.push("a.id_usuario_interno = ?");
     params.push(Number(id_usuario_interno));
@@ -98,18 +133,22 @@ function buildWhere(filtros = {}) {
     where.push("a.rut_usuario_externo = ?");
     params.push(rut_usuario_externo);
   }
+
   if (id_recurso) {
     where.push("a.id_recurso = ?");
     params.push(Number(id_recurso));
   }
+
   if (id_registro_prestamo) {
     where.push("a.id_registro_prestamo = ?");
     params.push(Number(id_registro_prestamo));
   }
+
   if (id_categoria) {
     where.push("a.id_categoria = ?");
     params.push(Number(id_categoria));
   }
+
   if (id_ubicacion) {
     where.push("a.id_ubicacion = ?");
     params.push(Number(id_ubicacion));
@@ -119,6 +158,7 @@ function buildWhere(filtros = {}) {
     where.push("a.fecha_hora >= ?");
     params.push(`${desde} 00:00:00`);
   }
+
   if (hasta) {
     where.push("a.fecha_hora <= ?");
     params.push(`${hasta} 23:59:59`);
@@ -177,9 +217,6 @@ function buildWhere(filtros = {}) {
         .toUpperCase()
         .replace(/\./g, "")
         .replace(/\s+/g, "");
-      const rutLooksLike =
-        /^[0-9K]+-?[0-9K]$/.test(rutNorm) || rutNorm.length >= 7;
-
       const hasLetters = /[A-Z]/i.test(refTrim);
 
       if (!hasLetters) {
@@ -193,25 +230,101 @@ function buildWhere(filtros = {}) {
         params.push(term, term, term);
       }
     }
-    if (ref_tipo === "usuario_interno") {
-      const refTrim = String(ref).trim();
-      const isDigitsOnly = /^\d+$/.test(refTrim);
 
+    if (ref_tipo === "usuario_interno") {
       if (isDigitsOnly) {
-        where.push("a.id_usuario_interno = ?");
-        params.push(Number(refTrim));
-      } else {
+        const id = Number(refTrim);
         where.push(
-          "(LOWER(u.nombre) LIKE ? OR LOWER(u.apellido) LIKE ? OR LOWER(CONCAT(u.nombre,' ',u.apellido)) LIKE ?)",
+          "(" +
+            "(a.detalle LIKE ? AND a.detalle LIKE ?)" +
+            " OR a.detalle LIKE ?" +
+            " OR a.detalle LIKE ?" +
+            ")",
         );
+        params.push(
+          "%target_tipo=usuario_interno%",
+          `%target_id=${id}%`,
+          `%id_usuario_afectado=${id}%`,
+          `%id_usuario_creado=${id}%`,
+        );
+      } else {
         const term = `%${refTrim.toLowerCase()}%`;
-        params.push(term, term, term);
+        where.push(
+          "(" +
+            "LOWER(a.detalle) LIKE ?" +
+            " OR LOWER(a.detalle) LIKE ?" +
+            " OR LOWER(a.detalle) LIKE ?" +
+            ")",
+        );
+        params.push(
+          `%target_nombre=${refTrim.toLowerCase()}%`,
+          `%target_apellido=${refTrim.toLowerCase()}%`,
+          term,
+        );
       }
     }
   }
 
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
   return { whereSql, params };
+}
+
+function computeRefFromRow(r, targetNameMap) {
+  if (r.id_recurso != null) {
+    return {
+      ref_tipo: "recurso",
+      ref_id: r.id_recurso,
+      ref_nombre: r.nombre_recurso ?? null,
+    };
+  }
+
+  if (r.id_categoria != null) {
+    return {
+      ref_tipo: "categoria",
+      ref_id: r.id_categoria,
+      ref_nombre: r.nombre_categoria ?? null,
+    };
+  }
+
+  if (r.id_ubicacion != null) {
+    return {
+      ref_tipo: "ubicacion",
+      ref_id: r.id_ubicacion,
+      ref_nombre: r.nombre_ubicacion ?? null,
+    };
+  }
+
+  if (r.rut_usuario_externo != null) {
+    const nom = `${r.nombre_externo || ""} ${r.apellido_externo || ""}`.trim();
+    return {
+      ref_tipo: "externo",
+      ref_id: r.rut_usuario_externo,
+      ref_nombre: nom.length ? nom : null,
+    };
+  }
+
+  if (r.id_registro_prestamo != null) {
+    return {
+      ref_tipo: "prestamo",
+      ref_id: r.id_registro_prestamo,
+      ref_nombre: null,
+    };
+  }
+
+  const tid = getAffectedInternalUserIdFromDetalle(r.detalle);
+  if (tid != null) {
+    const fromDetalle = getAffectedInternalUserNameFromDetalle(r.detalle);
+    const fromDb = targetNameMap?.get(tid) || null;
+    const name = fromDetalle || fromDb;
+
+    return {
+      ref_tipo: "usuario_interno",
+      ref_id: tid,
+      ref_nombre: name,
+    };
+  }
+
+  return { ref_tipo: null, ref_id: null, ref_nombre: null };
 }
 
 async function listarMovimientos({
@@ -254,34 +367,6 @@ async function listarMovimientos({
       ub.nombre AS nombre_ubicacion,
 
       a.detalle
-      ,
-      CASE
-        WHEN a.id_usuario_interno IS NOT NULL THEN 'usuario_interno'
-        WHEN a.id_recurso IS NOT NULL THEN 'recurso'
-        WHEN a.id_categoria IS NOT NULL THEN 'categoria'
-        WHEN a.id_ubicacion IS NOT NULL THEN 'ubicacion'
-        WHEN a.rut_usuario_externo IS NOT NULL THEN 'externo'
-        WHEN a.id_registro_prestamo IS NOT NULL THEN 'prestamo'
-        ELSE NULL
-      END AS ref_tipo,
-
-      CASE
-        WHEN a.id_usuario_interno IS NOT NULL THEN a.id_usuario_interno
-        WHEN a.id_recurso IS NOT NULL THEN a.id_recurso
-        WHEN a.id_categoria IS NOT NULL THEN a.id_categoria
-        WHEN a.id_ubicacion IS NOT NULL THEN a.id_ubicacion
-        WHEN a.id_registro_prestamo IS NOT NULL THEN a.id_registro_prestamo
-        ELSE NULL
-      END AS ref_id,
-
-      CASE
-        WHEN a.id_usuario_interno IS NOT NULL THEN TRIM(CONCAT(u.nombre, ' ', u.apellido))
-        WHEN a.id_recurso IS NOT NULL THEN r.nombre
-        WHEN a.id_categoria IS NOT NULL THEN c.nombre
-        WHEN a.id_ubicacion IS NOT NULL THEN ub.nombre
-        WHEN a.rut_usuario_externo IS NOT NULL THEN TRIM(CONCAT(ue.nombre, ' ', ue.apellido))
-        ELSE NULL
-      END AS ref_nombre
     FROM auditoria_evento a
     LEFT JOIN usuario_interno u ON u.id_usuario = a.id_usuario_interno
     LEFT JOIN recurso_fisico r ON r.id_recurso = a.id_recurso
@@ -308,7 +393,47 @@ async function listarMovimientos({
   const [countRows] = await db.query(countQuery, params);
   const total = countRows?.[0]?.total ?? 0;
 
-  return { page: pageNum, limit: limitNum, total, rows };
+  const targetIds = [];
+  for (const r of rows) {
+    if (
+      r.rut_usuario_externo != null ||
+      r.id_recurso != null ||
+      r.id_registro_prestamo != null ||
+      r.id_categoria != null ||
+      r.id_ubicacion != null
+    ) {
+      continue;
+    }
+
+    const tid = getAffectedInternalUserIdFromDetalle(r.detalle);
+    if (tid != null) targetIds.push(tid);
+  }
+
+  const uniqTargetIds = [...new Set(targetIds)];
+  let targetNameMap = new Map();
+
+  if (uniqTargetIds.length) {
+    const [urows] = await db.query(
+      `SELECT id_usuario, nombre, apellido
+       FROM usuario_interno
+       WHERE id_usuario IN (${uniqTargetIds.map(() => "?").join(",")})`,
+      uniqTargetIds,
+    );
+
+    targetNameMap = new Map(
+      urows.map((u) => [
+        Number(u.id_usuario),
+        `${u.nombre} ${u.apellido || ""}`.trim(),
+      ]),
+    );
+  }
+
+  const finalRows = rows.map((r) => {
+    const { ref_tipo, ref_id, ref_nombre } = computeRefFromRow(r, targetNameMap);
+    return { ...r, ref_tipo, ref_id, ref_nombre };
+  });
+
+  return { page: pageNum, limit: limitNum, total, rows: finalRows };
 }
 
 async function obtenerMovimientosParaReporte({
@@ -366,3 +491,4 @@ module.exports = {
   obtenerMovimientosParaReporte,
   encodeDetalle,
 };
+

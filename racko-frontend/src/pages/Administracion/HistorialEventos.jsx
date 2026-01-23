@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { http } from "../../api/http";
 import { initResize } from "../../utils/tableResize";
+
+import {
+  listarAuditoriaMovimientosApi,
+  abrirReporteMovimientosPdf,
+} from "../../api/Auditorias.api";
 
 const PAGE_SIZE = 30;
 
@@ -55,6 +59,59 @@ function formatDateTimeCL(dt) {
   const d = new Date(dt);
   if (Number.isNaN(d.getTime())) return "--";
   return d.toLocaleString("es-CL");
+}
+
+function parseDetalleParams(detalleStr) {
+  const out = {};
+  const s = String(detalleStr || "");
+  if (!s.includes("|")) return out;
+
+  const [, ...paramsRaw] = s.split("|");
+  for (const p of paramsRaw) {
+    const [k, v] = p.split("=");
+    if (k && v) out[String(k).trim()] = String(v).trim();
+  }
+  return out;
+}
+
+function getAffectedInternalUserFromDetalle(detalleStr) {
+  const s = String(detalleStr || "");
+  const p = parseDetalleParams(s);
+
+  const tt = String(p.target_tipo || "").toLowerCase();
+  const legacyId = p.id_usuario_afectado || p.id_usuario_creado || null;
+
+  const rawId = String(p.target_id ?? legacyId ?? "").trim();
+  const idFromParams = rawId ? Number(rawId) : NaN;
+
+  const nombre = String(p.target_nombre || "").trim();
+  const apellido = String(p.target_apellido || "").trim();
+  const full = `${nombre} ${apellido}`.trim();
+
+  // Caso moderno: target_tipo + target_id
+  if (tt === "usuario_interno" && Number.isFinite(idFromParams)) {
+    return { id: idFromParams, nombre: full || null };
+  }
+
+  // Caso legacy: viene id_usuario_afectado / id_usuario_creado pero NO viene target_tipo
+  if (Number.isFinite(idFromParams)) {
+    return { id: idFromParams, nombre: full || null };
+  }
+
+  // Fallback: detectar "(ID 4)" o "ID 4" en texto ya traducido
+  let m = s.match(/\(\s*ID\s*(\d+)\s*\)/i);
+  if (m?.[1]) {
+    const n = Number(m[1]);
+    if (Number.isFinite(n)) return { id: n, nombre: null };
+  }
+
+  m = s.match(/\bID\s*(\d+)\b/i);
+  if (m?.[1]) {
+    const n = Number(m[1]);
+    if (Number.isFinite(n)) return { id: n, nombre: null };
+  }
+
+  return null;
 }
 
 export default function HistorialEventos() {
@@ -119,11 +176,10 @@ export default function HistorialEventos() {
       setLoading(true);
       setErrorKey("");
 
-      const resp = await http.get("/api/auditoria/movimientos", {
-        params: { ...paramsBase, page: targetPage },
+      const data = await listarAuditoriaMovimientosApi({
+        ...paramsBase,
+        page: targetPage,
       });
-
-      const data = resp?.data;
 
       if (!data?.ok) {
         setRows([]);
@@ -149,42 +205,12 @@ export default function HistorialEventos() {
       setLoading(true);
       setErrorKey("");
 
-      const resp = await http.get("/api/auditoria/reporte.pdf", {
-        params: { ...paramsBase, page: undefined },
-        responseType: "blob",
+      await abrirReporteMovimientosPdf({
+        ...paramsBase,
+        page: undefined,
       });
-
-      const contentType = resp.headers?.["content-type"] || "";
-      if (contentType.includes("application/json")) {
-        const text = await resp.data.text();
-        let json = null;
-        try {
-          json = JSON.parse(text);
-        } catch {}
-        setErrorKey(json?.error || "errors.audit.pdfFailed");
-        return;
-      }
-
-      const file = new Blob([resp.data], { type: "application/pdf" });
-      const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, "_blank", "noopener,noreferrer");
-      setTimeout(() => URL.revokeObjectURL(fileURL), 60_000);
     } catch (e) {
-      try {
-        const blob = e?.response?.data;
-        if (blob && typeof blob.text === "function") {
-          const text = await blob.text();
-          let json = null;
-          try {
-            json = JSON.parse(text);
-          } catch {}
-          setErrorKey(json?.error || "errors.audit.pdfFailed");
-        } else {
-          setErrorKey(e?.response?.data?.error || "errors.audit.pdfFailed");
-        }
-      } catch {
-        setErrorKey("errors.audit.pdfFailed");
-      }
+      setErrorKey(e?.response?.data?.error || "errors.audit.pdfFailed");
     } finally {
       setLoading(false);
     }
@@ -249,13 +275,16 @@ export default function HistorialEventos() {
       return t(key, "—");
     }
 
+    const affected = getAffectedInternalUserFromDetalle(ev?.detalle);
+    if (affected?.id != null)
+      return t("events.ref.internalUser", "Usuario interno");
+
     if (ev?.id_recurso) return t("events.ref.resource", "Recurso");
     if (ev?.id_categoria) return t("events.ref.category", "Categoría");
     if (ev?.id_ubicacion) return t("events.ref.location", "Ubicación");
     if (ev?.rut_usuario_externo) return t("events.ref.external", "Externo");
     if (ev?.id_registro_prestamo) return t("events.ref.loan", "Préstamo");
-    if (ev?.id_usuario_interno)
-      return t("events.ref.internalUser", "Usuario interno");
+
     return "—";
   }
 
@@ -269,17 +298,19 @@ export default function HistorialEventos() {
       const rtNorm = String(rt).toLowerCase();
 
       if (rtNorm === "usuario_interno") {
-        const name =
-          refNombre ||
-          `${ev?.nombre_usuario_afectado || ""} ${ev?.apellido_usuario_afectado || ""}`.trim();
-
-        if (refId != null) return `#${refId}${name ? ` · ${name}` : ""}`;
-        return name || "—";
+        if (refId != null)
+          return `#${refId}${refNombre ? ` · ${refNombre}` : ""}`;
+        return refNombre || "—";
       }
 
       if (refId != null && refNombre) return `#${refId} · ${refNombre}`;
       if (refId != null) return `#${refId}`;
       if (refNombre) return String(refNombre);
+    }
+
+    const affected = getAffectedInternalUserFromDetalle(ev?.detalle);
+    if (affected?.id != null) {
+      return `#${affected.id}${affected.nombre ? ` · ${affected.nombre}` : ""}`;
     }
 
     if (ev?.id_recurso) {
@@ -301,14 +332,8 @@ export default function HistorialEventos() {
           : "";
       return `${ev.rut_usuario_externo}${fullName}`;
     }
-    if (ev?.id_registro_prestamo) 
-      return `#${ev.id_registro_prestamo}`;
-    if (ev?.id_usuario_interno) {
-      const name = ev?.nombre_usuario
-        ? `${ev.nombre_usuario} ${ev.apellido_usuario || ""}`.trim()
-        : "";
-      return `#${ev.id_usuario_interno}${name ? ` · ${name}` : ""}`;
-    }
+    if (ev?.id_registro_prestamo) return `#${ev.id_registro_prestamo}`;
+
     return "—";
   }
 
@@ -323,12 +348,10 @@ export default function HistorialEventos() {
     <div className="panel events-page">
       <h1>{t("events.title", "Historial de eventos")}</h1>
 
-      {/* FILTROS */}
       <div className="events-filters">
         <div className="events-filters-accent" aria-hidden="true" />
         <div className="events-filters-body">
           <div className="events-filters-grid">
-            {/* Fila 1 */}
             <div className="events-field">
               <label>{t("events.filters.search", "Buscar")}</label>
               <input
@@ -366,7 +389,6 @@ export default function HistorialEventos() {
               </select>
             </div>
 
-            {/* Fila 2 */}
             <div className="events-field">
               <label>{t("events.filters.rangeFrom", "Desde")}</label>
               <input
@@ -399,7 +421,6 @@ export default function HistorialEventos() {
               />
             </div>
 
-            {/* Fila 3 */}
             <div className="events-field">
               <label>{t("events.filters.refType", "Ref. tipo")}</label>
               <select
@@ -467,7 +488,6 @@ export default function HistorialEventos() {
         </div>
       </div>
 
-      {/* TABLA */}
       <div className="events-table-wrap">
         <table className="events-table">
           <thead>
@@ -541,11 +561,9 @@ export default function HistorialEventos() {
         </table>
       </div>
 
-      {/* PAGINACIÓN */}
       <div className="events-meta events-meta--center">
         <div className="events-pagination-info">
-          {t("events.table.total", "Total")}: <strong>{total}</strong>
-          {"  "}—{"  "}
+          {t("events.table.total", "Total")}: <strong>{total}</strong> —{" "}
           {t(
             "events.table.pagination.pageOf",
             { page, totalPages },
