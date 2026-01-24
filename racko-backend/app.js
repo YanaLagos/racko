@@ -20,4 +20,10 @@ app.get("/api/health", (req, res) => {
   return sendOk(res, { status: 200, message: "success.server.healthOk", data: { status: "ok" } });
 });
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "dist")));
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
 module.exports = app;
