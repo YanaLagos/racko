@@ -7,7 +7,7 @@ import {
   crearUbicacionApi,
   actualizarUbicacionApi,
   cambiarEstadoUbicacionApi,
-} from "../../api/ubicacion.api";
+} from "../../api/Ubicacion.api";
 
 import EditIcon from "../../assets/edit.svg?react";
 import Location from "../../assets/location.svg?react";
