@@ -63,6 +63,20 @@ export default function Recursos() {
     return () => mq.removeEventListener?.("change", apply);
   }, []);
 
+  useEffect(() => {
+    const base = "Racko";
+
+    if (categoria?.nombre) {
+      document.title = `${base} | ${categoria.nombre}`;
+    } else {
+      document.title = base;
+    }
+
+    return () => {
+      document.title = base;
+    };
+  }, [categoria?.nombre]);
+
   const [loading, setLoading] = useState(true);
   const [errorKey, setErrorKey] = useState("");
 
@@ -143,7 +157,6 @@ export default function Recursos() {
 
       const catData = catResp.data.data;
       setCategoria(catData);
-      document.title = `Racko | ${catData.nombre}`;
 
       const recResp = await http.get(`/api/recursos/categoria/${idCat}`);
       if (!recResp?.data?.ok) {
