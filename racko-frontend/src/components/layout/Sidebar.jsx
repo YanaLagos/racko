@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import RackoLogo from "../../assets/logo-racko.svg?react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
+import RackoLogo from "../../assets/logo-racko.svg?react";
 import HomeIcon from "../../assets/home.svg?react";
 import AssetsIcon from "../../assets/assets.svg?react";
 import AuditIcon from "../../assets/report.svg?react";
@@ -11,7 +12,7 @@ import UsersIcon from "../../assets/users.svg?react";
 import AdminIcon from "../../assets/admin.svg?react";
 import SignOut from "../../assets/sign-out.svg?react";
 
-export default function Sidebar({ onNavigate, className = "" }) {
+export default function Sidebar({ className = "" }) {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -24,6 +25,52 @@ export default function Sidebar({ onNavigate, className = "" }) {
     setShowLogoutModal(false);
     logout();
   };
+
+  useEffect(() => {
+    if (!showLogoutModal) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [showLogoutModal]);
+
+  const logoutModal = showLogoutModal
+    ? createPortal(
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setShowLogoutModal(false);
+          }}
+        >
+          <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
+            <h3>{t("logout.title")}</h3>
+            <p>{t("logout.subtitle")}</p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                {t("common.cancel")}
+              </button>
+
+              <button
+                type="button"
+                className="btn-modal-logout"
+                onClick={handleConfirmLogout}
+              >
+                {t("menu.logout")}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )
+    : null;
 
   return (
     <>
@@ -73,33 +120,7 @@ export default function Sidebar({ onNavigate, className = "" }) {
         </div>
       </aside>
 
-      {/* MODAL */}
-      {showLogoutModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h3>{t("logout.title")}</h3>
-            <p>{t("logout.subtitle")}</p>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-modal-cancel"
-                onClick={() => setShowLogoutModal(false)}
-              >
-                {t("common.cancel")}
-              </button>
-
-              <button
-                type="button"
-                className="btn-modal-logout"
-                onClick={handleConfirmLogout}
-              >
-                {t("menu.logout")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {logoutModal}
     </>
   );
 }
